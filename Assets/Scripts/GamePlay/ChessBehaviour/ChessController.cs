@@ -154,9 +154,9 @@ public class ChessController : MonoBehaviour {
 
         targetChess = newTarget; // assign new focus
         newTarget.GotFocused?.Invoke(this);    // focus the new target
-        _motor.SetTracingTarget(newTarget); // trace the new target
 
         if (_anim != null) _anim.MovingToTarget?.Invoke();
+        _motor.SetTracingTarget(newTarget); // trace the new target
     }
 
     public void RemoveFocus() {
