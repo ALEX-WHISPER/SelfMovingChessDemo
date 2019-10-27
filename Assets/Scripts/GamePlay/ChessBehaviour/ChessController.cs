@@ -24,6 +24,7 @@ public class ChessController : MonoBehaviour {
     private ChessMotor _motor;
     private ChessStat _stat;
     private BoardManager _boardManager;
+    private AnimManager _anim;
 
     private ChessController targetChess; // 攻击目标
     private List<ChessController> seekerChessList = new List<ChessController>(); // 被攻击来源
@@ -65,10 +66,12 @@ public class ChessController : MonoBehaviour {
         };
 
         _stat.OnCharacterDie += (stat) => {
+            if (_anim != null) _anim.AttackFinished?.Invoke(false);
             OnChessDieCallback();
         };
 
         _motor.OnReachedDestination += (targetTransform) => {
+            if (_anim != null) _anim.StartAttacking?.Invoke();
             Fight();
         };
     }
@@ -82,10 +85,13 @@ public class ChessController : MonoBehaviour {
         _motor = transform.GetComponent<ChessMotor>();
         _stat = transform.GetComponent<ChessStat>();
         _boardManager = GameObject.FindWithTag("GameBoard").GetComponent<BoardManager>();
+        _anim = GetComponentInChildren<AnimManager>();
     }
 
     void Start() {
         EventsRegister();
+
+        if (_anim != null) _anim.SetReady?.Invoke();
     }
 
     void Update() {
@@ -149,6 +155,8 @@ public class ChessController : MonoBehaviour {
         targetChess = newTarget; // assign new focus
         newTarget.GotFocused?.Invoke(this);    // focus the new target
         _motor.SetTracingTarget(newTarget); // trace the new target
+
+        if (_anim != null) _anim.MovingToTarget?.Invoke();
     }
 
     public void RemoveFocus() {

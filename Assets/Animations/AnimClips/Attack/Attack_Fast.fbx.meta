@@ -1,52 +1,12 @@
 fileFormatVersion: 2
-guid: 9cf53162feba93d4baf859803fa4d535
+guid: aefb76a373bfc6745954e399e27113fb
 ModelImporter:
   serializedVersion: 26
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: Archer_Idle
-  externalObjects:
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Arrow_DIFF
-    second: {fileID: 2800000, guid: 95fc28b26c6a19f4485feb418c27335b, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Arrow_NM
-    second: {fileID: 2800000, guid: 447c02105d759cc4c894428532529a3d, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Bow_DIFF
-    second: {fileID: 2800000, guid: 819d0356ea416cb4eb30af7ecb0d5c26, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Bow_NM
-    second: {fileID: 2800000, guid: ad21b6b3c64475c4786bf0ad59f1e20f, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Erika_Archer_Clothes_diffuse
-    second: {fileID: 2800000, guid: 7d8ea5b824eaa6c40bef4ddae35cb9ea, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Erika_Archer_Clothes_normal
-    second: {fileID: 2800000, guid: df066d7ec158f8049a918046a2103ed3, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: FemaleFitA_Body_diffuse
-    second: {fileID: 2800000, guid: 5eed9f710079c804dacc39c7af41380c, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: FemaleFitA_StdNM
-    second: {fileID: 2800000, guid: ae6f15d0d389ff34bbfb2f6f609924b0, type: 3}
+    second: Attack_Fast
+  externalObjects: {}
   materials:
     importMaterials: 1
     materialName: 0
@@ -75,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Archer_Idle
+      name: Attack_Fast
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 180
+      lastFrame: 61
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

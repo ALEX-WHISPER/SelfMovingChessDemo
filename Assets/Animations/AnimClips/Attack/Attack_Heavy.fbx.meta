@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: aefb76a373bfc6745954e399e27113fb
+guid: 08b72cd0f339f9045a8c71eba0245ef8
 ModelImporter:
   serializedVersion: 26
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: AttackWave
+    second: Attack_Heavy
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -35,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: AttackWave
+      name: Attack_Heavy
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 61
+      lastFrame: 140
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

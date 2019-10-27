@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: b1b6185b18f13794592df2d5de6c6cea
+guid: a1b14ad11049a3f4a837f1551a735163
 ModelImporter:
   serializedVersion: 26
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: Emit_Quick
+    second: Attack_Soft
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -35,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Emit_Quick
+      name: Attack_Soft
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 21
+      lastFrame: 72
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
