@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class GameManager: SingletonBase<GameManager> {
-
+    
+    public Action<ChessHero> OnChessPurchased;
     public Action OnSelfSideVictory;
     public Action OnOtherSideVictory;
 
@@ -25,6 +27,11 @@ public class GameManager: SingletonBase<GameManager> {
         };
     }
 
+    public void PurchaseChessToBackup(ChessHero chessHero) {
+        OnChessPurchased?.Invoke(chessHero);
+    }
+
+    #region AI 战斗关系绑定
     public void BindingFocus() {
         if (_boardManager == null) {
             return;
@@ -76,4 +83,5 @@ public class GameManager: SingletonBase<GameManager> {
         self.SetFocus(other);
         other.SetFocus(self);
     }
+    #endregion
 }

@@ -4,11 +4,6 @@ using UnityEngine;
 
 public partial class BoardManager : MonoBehaviour {
 
-    [Header("InitChess")]
-    public int chessCount_OtherSide = 3;
-    public List<GameObject> chessPrefab_OtherSide;
-    public List<GameObject> chessPrefab_SelfSide;
-
     private void InitChessLayout() {
         InitOtherSide();
     }
@@ -42,7 +37,7 @@ public partial class BoardManager : MonoBehaviour {
     private bool GetAvailableSlot(out int rowIndex, out int colIndex) {
         int i = -1, j = -1;
 
-        // 随即范围为敌方的非战斗区域
+        // 随机范围为敌方的非战斗区域
         do {
             i = Random.Range(0, 8);
             j = Random.Range(4, 7);

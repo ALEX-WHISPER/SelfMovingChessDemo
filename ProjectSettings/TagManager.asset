@@ -16,12 +16,12 @@ TagManager:
   - 
   - PostProcessing
   - ChessPanel
-  - Enemy
-  - 
-  - 
-  - 
-  - 
-  - 
+  - EnemyChess
+  - MyChess
+  - Slot_0
+  - Slot_1
+  - Slot_2
+  - Slot_3
   - 
   - 
   - 
@@ -41,4 +41,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 3073274355
     locked: 0

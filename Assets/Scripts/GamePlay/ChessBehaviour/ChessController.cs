@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Linq;
 
 public enum ChessType { SELF_SIDE, OTHER_SIDE }
+public enum ChessHero { SWORD, AXE, KNIGHT, MUTANT, ARCHER }
 
 [RequireComponent(typeof(ChessMotor))]
 [RequireComponent(typeof(ChessStat))]
@@ -17,6 +18,7 @@ public class ChessController : MonoBehaviour {
     public float attackDelay = 0.5f;
 
     public ChessType _chessType;
+    public ChessHero _chessCharacter;
     public bool isPlayer = false;
     public LayerMask layer_Ground;
     public LayerMask layer_Enemy;

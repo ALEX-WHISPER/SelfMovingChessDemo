@@ -55,4 +55,8 @@ public class AnimManager : MonoBehaviour {
             }
         };
     }
+
+    private void Start() {
+        SetReady?.Invoke();
+    }
 }
