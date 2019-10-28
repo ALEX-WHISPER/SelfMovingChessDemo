@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Draggable : MonoBehaviour {
 
+    public GameObject display_AllowPlacing;
+    public GameObject display_NoPlacing;
+
     public LayerMask interactLayer;
     public float yPosOnDragging = 0f;
     public float yPosOnDragged = 0f;
@@ -18,17 +21,14 @@ public class Draggable : MonoBehaviour {
     private int selected_X = -1;
     private int selected_Y = -1;
     private bool isCheckSelection = false;
+    private bool isAllowedPlacing = false;
+
+    private GameObject display_Green = null;
+    private GameObject display_Red = null;
 
     void Start() {
         lastLocation = transform.position;
         boardManager = GameObject.Find("ChessBoard").GetComponent<BoardManager>();
-
-        InteractEventsManager.MouseDoneDrag += () => {
-            var chess = transform.GetComponent<ChessController>();
-            var pos_from = new Vector2(lastLocation.x, lastLocation.z);
-            var pos_to = new Vector2(newLocation.x, newLocation.z);
-            boardManager.MoveChess(chess, pos_from, pos_to);
-        };
     }
 
     void Update() {
@@ -39,14 +39,14 @@ public class Draggable : MonoBehaviour {
 
     void OnMouseDown() {
         mZCoord = Camera.main.WorldToScreenPoint(transform.position).z;
-
-        // calc the offset between the selected object and cursor
-        mOffset = transform.position - GetMouseWorldPosition();
+        lastLocation = transform.position;
     }
 
     void OnMouseDrag() {
         // move the selected object along with cursor
-        var targetPos = GetMouseWorldPosition() + mOffset;
+        //var targetPos = GetMouseWorldPosition() + mOffset;
+
+        var targetPos = GetMouseWorldPosition();
         targetPos.y = yPosOnDragging;
 
         transform.position = targetPos;
@@ -58,16 +58,22 @@ public class Draggable : MonoBehaviour {
     void OnMouseUp() {
         // drop the selected object into the drop area
 
-        if (boardManager == null) {
-            transform.position = new Vector3(0f, transform.position.y, 0f);
+        DeactivateDisplayEffect();
+        if (boardManager == null || !isAllowedPlacing) {
+            transform.position = lastLocation;
             return;
-        } 
+        }
 
-        lastLocation = transform.position;
         newLocation = boardManager.GetTileCenter(selected_X, selected_Y);
         transform.position = newLocation;
 
+        var chess = transform.GetComponent<ChessController>();
+        var pos_from = new Vector2(lastLocation.x, lastLocation.z);
+        var pos_to = new Vector2(newLocation.x, newLocation.z);
+
         isCheckSelection = false;
+        
+        boardManager.OnChessSetOnBoard?.Invoke(chess, pos_from, pos_to);
         InteractEventsManager.MouseDoneDrag?.Invoke();
     }
     
@@ -87,14 +93,14 @@ public class Draggable : MonoBehaviour {
 
         // draw selecting area
         if (selected_X >= 0 && selected_Y >= 0) {
-            var bottomLeft = Vector3.right * selected_X + Vector3.forward * selected_Y;
-            var topRight = Vector3.right * (selected_X + 1) + Vector3.forward * (selected_Y + 1);
-
-            var topLeft = Vector3.right * selected_X + Vector3.forward * (selected_Y + 1);
-            var bottomRight = Vector3.right * (selected_X + 1) + Vector3.forward * selected_Y;
-
-            Debug.DrawLine(bottomLeft, topRight, Color.green);
-            Debug.DrawLine(topLeft, bottomRight, Color.green);
+            // this position is occupied
+            if (boardManager.GetBoardGridStatus(selected_X, selected_Y) != 0) {
+                ActivateDisplayEffect(false);
+                isAllowedPlacing = false;
+            } else {
+                ActivateDisplayEffect(true);
+                isAllowedPlacing = true;
+            }
         }
     }
 
@@ -104,5 +110,44 @@ public class Draggable : MonoBehaviour {
 
         var worldPos = Camera.main.ScreenToWorldPoint(screenPos);
         return worldPos;
+    }
+
+    private void ActivateDisplayEffect(bool isAllowPlacing) {
+        var characterLocation = boardManager.GetTileCenter(selected_X, selected_Y);
+
+        // 在当前位置尝试点击拖拽时不显示放置效果
+        if (characterLocation.x == lastLocation.x && characterLocation.z == lastLocation.z) {
+            return;
+        }
+
+        var displayLocation = new Vector3(characterLocation.x, 0.01f, characterLocation.z);
+
+        if (!isAllowPlacing) {
+            if (display_Red == null) {
+                display_Red = Instantiate(display_NoPlacing, displayLocation, display_NoPlacing.transform.rotation);
+            } else {
+                if (display_Green != null)
+                    display_Green.SetActive(false);
+                display_Red.transform.position = displayLocation;
+                display_Red.SetActive(true);
+            }
+        } else {
+            if (display_Green == null) {
+                display_Green = Instantiate(display_AllowPlacing, displayLocation, display_AllowPlacing.transform.rotation);
+            } else {
+                if (display_Red != null)
+                    display_Red.SetActive(false);
+                display_Green.transform.position = displayLocation;
+                display_Green.SetActive(true);
+            }
+        }
+    }
+
+    private void DeactivateDisplayEffect() {
+        if (display_Red != null)
+            display_Red.SetActive(false);
+
+        if (display_Green != null)
+            display_Green.SetActive(false);
     }
 }

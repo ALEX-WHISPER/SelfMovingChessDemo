@@ -954,6 +954,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2593017891973904048, guid: 1cc7a6523bfb9194fb6a2ca346dc4922,
+        type: 3}
+      propertyPath: display_AllowPlacing
+      value: 
+      objectReference: {fileID: 3662713287721769511, guid: 816add7cc0b040c4185812fc07c3fd77,
+        type: 3}
+    - target: {fileID: 2593017891973904048, guid: 1cc7a6523bfb9194fb6a2ca346dc4922,
+        type: 3}
+      propertyPath: display_NoPlacing
+      value: 
+      objectReference: {fileID: 6433643406359622850, guid: faca9b4929ea2d34899974ffbb6ca8b2,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1cc7a6523bfb9194fb6a2ca346dc4922, type: 3}
 --- !u!1001 &2859472656981853389
@@ -1023,6 +1035,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 311490766663329453, guid: b890b9336017e544f942676889434083,
+        type: 3}
+      propertyPath: display_AllowPlacing
+      value: 
+      objectReference: {fileID: 3662713287721769511, guid: 816add7cc0b040c4185812fc07c3fd77,
+        type: 3}
+    - target: {fileID: 311490766663329453, guid: b890b9336017e544f942676889434083,
+        type: 3}
+      propertyPath: display_NoPlacing
+      value: 
+      objectReference: {fileID: 6433643406359622850, guid: faca9b4929ea2d34899974ffbb6ca8b2,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b890b9336017e544f942676889434083, type: 3}
 --- !u!1001 &7581691562487532902
@@ -1092,6 +1116,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5389634779544594134, guid: 9432c9d51b9935b47ab11f30ccbc4c36,
+        type: 3}
+      propertyPath: display_AllowPlacing
+      value: 
+      objectReference: {fileID: 3662713287721769511, guid: 816add7cc0b040c4185812fc07c3fd77,
+        type: 3}
+    - target: {fileID: 5389634779544594134, guid: 9432c9d51b9935b47ab11f30ccbc4c36,
+        type: 3}
+      propertyPath: display_NoPlacing
+      value: 
+      objectReference: {fileID: 6433643406359622850, guid: faca9b4929ea2d34899974ffbb6ca8b2,
+        type: 3}
     - target: {fileID: 5389634779544594129, guid: 9432c9d51b9935b47ab11f30ccbc4c36,
         type: 3}
       propertyPath: radius
