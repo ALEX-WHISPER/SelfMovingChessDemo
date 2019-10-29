@@ -11,6 +11,8 @@ public class HealthBarManager : SimpleHealthBar {
     }
 
     void Start() {
-        chessController.OnDamageTaken += this.UpdateBar;
+        if (chessController != null) {
+            chessController.OnDamageTaken += this.UpdateBar;
+        }
     }
 }

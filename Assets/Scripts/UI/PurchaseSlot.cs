@@ -2,27 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class PurchaseSlot : MonoBehaviour, IPointerClickHandler {
 
     public List<GameObject> _gfxList;
     public string _layerName;
     public Transform rtParent;
+    public Text txt_CostValue;
+    public Text txt_ChessName;
 
     private GameObject slotGfx;
     private float lastClick = 0f;
     private float interval = .2f;
     private bool allowedToPurchase = false;
+    private ChessProp _chessProp;
 
     private void Start() {
         SlotRefresh();
     }
     
+    // 刷新
     public void SlotRefresh() {
+        DisplayChessRT();
+        DisplayChessInfo();
+    }
+    
+    // 打开
+    public void OpenPurchasePanel() {
+
+    }
+
+    // 关闭
+    public void ClosePurchasePanel() {
+
+    }
+
+    private void DisplayChessRT() {
         var count = _gfxList.Count;
         var _gfxPrefab = _gfxList[Random.Range(0, count)];
 
         var _gfx = Instantiate(_gfxPrefab, rtParent);
+
         slotGfx = _gfx;
 
         _gfx.transform.localPosition = Vector3.zero;
@@ -30,6 +51,18 @@ public class PurchaseSlot : MonoBehaviour, IPointerClickHandler {
 
         ChangeLayersRecursively(rtParent, _layerName);
         allowedToPurchase = true;
+    }
+
+    private void DisplayChessInfo() {
+        _chessProp = slotGfx.GetComponent<Character>()._chessProp;
+
+        if (txt_CostValue != null) {
+            txt_CostValue.text = $"×{_chessProp.cost.GetValue}";
+        }
+
+        if (txt_ChessName != null) {
+            txt_ChessName.text = $"{_chessProp.chessName}";
+        }
     }
 
     private void ChangeLayersRecursively(Transform trans, string name) {
@@ -47,9 +80,7 @@ public class PurchaseSlot : MonoBehaviour, IPointerClickHandler {
 
         // double click
         if ((lastClick + interval) > Time.time) {
-            var prop = slotGfx.GetComponent<Character>()._chessProp;
-
-            if (!GameManager.Instance.PurchaseChessToBackup(prop)) {
+            if (!GameManager.Instance.PurchaseChessToBackup(_chessProp)) {
                 return;
             }
 

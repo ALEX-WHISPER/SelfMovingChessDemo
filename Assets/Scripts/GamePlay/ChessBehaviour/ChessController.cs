@@ -116,10 +116,11 @@ public class ChessController : MonoBehaviour {
         EventsRegister();
 
         Instantiate(chessProp._gfx, transform);
-        _anim = GetComponentInChildren<AnimManager>();
 
-        if (_anim != null)
+        _anim = GetComponentInChildren<AnimManager>();
+        if (_anim != null) {
             _anim.SetReady?.Invoke();
+        }
     }
 
     #region path finding

@@ -7,7 +7,8 @@ public class ChessProp : ScriptableObject {
     public ChessType character;
     public string chessName;
     public GameObject _gfx;
-    
+
+    public Stat level;
     public Stat damageAmout;
     public Stat maxHealth;
     public Stat buff;
@@ -23,6 +24,7 @@ public class ChessProp : ScriptableObject {
         chessName = template.chessName;
         _gfx = template._gfx;
 
+        level = template.level;
         damageAmout = template.damageAmout;
         maxHealth = template.maxHealth;
         buff = template.buff;

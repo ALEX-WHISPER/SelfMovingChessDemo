@@ -4,19 +4,29 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "GameProp", menuName = "Game Properties Containter")]
 public class GameProp : ScriptableObject {
+
+    public enum GAME_STATUS { GAME_START, Preparing, Fighting, RoundFinished, GameFinished }
+
+    [Header("Game State")]
+    public GAME_STATUS _status;
+
     [Header("Base values")]
     public int baseVal_Health = 80;
     public int baseVal_Level = 1;
     public int baseVal_Exp = 0;
     public int baseVal_RoundNo = 1;
     public int baseVal_TreasureAmount;
+    public string playerName;
+    public string enemyName;
 
+    public int battleFieldMaxChessCount = 3;
     public int backupFieldMaxSlot = 8;
-    public int duration_ReadStage = 25;
+    public int duration_PrepareStage = 25;
     public int duration_FightStage = 45;
 
     [Header("Rules")]
-    public Dictionary<int, int> curLv_TotalExp;
+    public List<int> expTotalInEachLevel;
+    private Dictionary<int, int> curLv_TotalExp;
 
     [Header("Properties")]
     [SerializeField] private Stat _health;
@@ -30,6 +40,8 @@ public class GameProp : ScriptableObject {
     [SerializeField] private Stat _defeat;
 
     // Exposed
+    public string PlayerName { get { return playerName; } }
+    public string EnemyName { get { return enemyName; } }
     public int Health { get { return _health.GetValue; } }
     public int Level { get { return _level.GetValue; } }
     public int Exp { get { return _exp.GetValue; } }
@@ -42,6 +54,7 @@ public class GameProp : ScriptableObject {
     public int DefeatCount { get { return _defeat.GetValue; } }
 
     // Events
+    public Action<GAME_STATUS> OnGameStatusChanged;
     public Action OnLevelUp;
     public Action<int> OnExpIncreased;
     public Action<int> OnExpDecreased;
@@ -54,6 +67,8 @@ public class GameProp : ScriptableObject {
     public Action<bool> OnGameOver;
 
     public void Init() {
+        _status = GAME_STATUS.GAME_START;
+
         _health = new Stat(baseVal_Health);
         _level = new Stat(baseVal_Level);
         _exp = new Stat(baseVal_Exp);
@@ -69,6 +84,10 @@ public class GameProp : ScriptableObject {
     }
 
     private void EventsRegister() {
+        OnGameStatusChanged += (newStatus) => {
+            _status = newStatus;
+        };
+
         // 升级
         OnLevelUp += () => {
             _level.Increase(); // 等级/人口提升
@@ -108,12 +127,12 @@ public class GameProp : ScriptableObject {
             _chessNo_Other.Set(otherChessCount);
             
             // 己方棋子被团灭，本局败
-            if (_chessNo_Self.GetValue <= 0) {
+            if (_chessNo_Self.GetValue <= 0 && _status != GAME_STATUS.GAME_START) {
                 OnRoundDefeat?.Invoke(0);
             }
 
             // 敌方棋子被团灭，本局胜
-            if (_chessNo_Other.GetValue <= 0) {
+            if (_chessNo_Other.GetValue <= 0 && _status != GAME_STATUS.GAME_START) {
                 OnRoundWin?.Invoke();
             }
         };

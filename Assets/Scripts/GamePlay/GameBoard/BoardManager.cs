@@ -16,6 +16,7 @@ public partial class BoardManager : MonoBehaviour {
     private float selected_X;
     private float selected_Y;
     private bool isBoardInteractable = true;
+    private bool isChessMovable = true;
 
     public Action<int, int> OnChessListChanged;
 
@@ -48,6 +49,9 @@ public partial class BoardManager : MonoBehaviour {
         InteractEventsManager.MouseDoneDrag += () => { isBoardInteractable = true; };
         InteractEventsManager.MouseEnterInteractable += () => { isBoardInteractable = false; };
         InteractEventsManager.MouseLeaveInteractable += () => { isBoardInteractable = true; };
+
+        GameManager.Instance.OnPreparationProceeded += () => { isChessMovable = true; };
+        GameManager.Instance.OnPreparationFinished += () => { isChessMovable = false; };
     }
 
     void Start() {
@@ -82,7 +86,7 @@ public partial class BoardManager : MonoBehaviour {
 
     // 移动棋子
     public void MoveChess(ChessController chess, Vector2 pos_from, Vector2 pos_to) {
-        if (chess == null) {
+        if (chess == null || !isChessMovable) {
             return;
         }
 

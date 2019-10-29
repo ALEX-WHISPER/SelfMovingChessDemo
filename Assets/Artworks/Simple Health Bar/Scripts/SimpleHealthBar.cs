@@ -9,6 +9,8 @@ public class SimpleHealthBar : MonoBehaviour
 {	
 	// COLOR OPTIONS //
 	public Image barImage;
+    public Color lerpEndColor = new Color32(0xcc, 0x67, 0x33, 0xff);
+
 	public enum ColorMode
 	{
 		Single,
@@ -131,7 +133,7 @@ public class SimpleHealthBar : MonoBehaviour
 		// Call the functions for the options.
 		UpdateOptions();
 
-        barImage.color = Color.Lerp(new Color32(0xcc, 0x67, 0x33, 0xff), barColor, _currentFraction);
+        barImage.color = Color.Lerp(lerpEndColor, barColor, _currentFraction);
 	}
 
 	/// <summary>

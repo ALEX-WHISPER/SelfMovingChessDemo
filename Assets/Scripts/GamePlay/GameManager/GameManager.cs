@@ -4,21 +4,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class GameManager: SingletonBase<GameManager> {
+public partial class GameManager: SingletonBase<GameManager> {
 
     [SerializeField]
     private GameProp _gameProp;
     private BoardManager _boardManager;
+    private UIManager _uiManager;
     private bool isBonded = false;
 
+    public Action OnProcessFinished;
+    public Action OnPreparationProceeded;
+    public Action OnPreparationFinished;
     public Action<bool> OnRoundFinished;
 
     void Awake() {
         _boardManager = GameObject.FindWithTag("GameBoard").GetComponent<BoardManager>();
+        _uiManager = GetComponent<UIManager>();
         _gameProp.Init();
     }
 
     private void OnEnable() {
+        StatusControl();
+
         // 棋子数量发生变化
         _boardManager.OnChessListChanged += (selfCount, otherCount) => {
             _gameProp.OnChessCountChanged?.Invoke(selfCount, otherCount);
@@ -39,6 +46,26 @@ public class GameManager: SingletonBase<GameManager> {
         // 游戏结束
         _gameProp.OnGameOver += (isWin) => {
             Debug.Log($"GameOver: {isWin}");
+        };
+    }
+
+    private void StatusControl() {
+        OnProcessFinished += () => {
+            if (_gameProp._status == GameProp.GAME_STATUS.Preparing) {
+                // Enter fight stage...
+                _gameProp._status = GameProp.GAME_STATUS.Fighting;
+                EnterStatus_Preparing();
+            }
+
+            if (_gameProp._status == GameProp.GAME_STATUS.Fighting) {
+                // Enter round finished stage...
+                _gameProp._status = GameProp.GAME_STATUS.RoundFinished;
+            }
+
+            if (_gameProp._status == GameProp.GAME_STATUS.RoundFinished) {
+                // Enter preparation stage...
+                _gameProp._status = GameProp.GAME_STATUS.Preparing;
+            }
         };
     }
 
