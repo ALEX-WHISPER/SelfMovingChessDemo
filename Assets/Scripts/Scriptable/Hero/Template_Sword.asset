@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c9e9907f915a64ebf870d675cc6950, type: 3}
+  m_Name: Template_Sword
+  m_EditorClassIdentifier: 
+  camp: 1
+  character: 1
+  chessName: Sword
+  _gfx: {fileID: 8737800896936779051, guid: cc1d67c3ffbb43c4784211a0dca71c25, type: 3}
+  damageAmout:
+    baseValue: 5
+  maxHealth:
+    baseValue: 100
+  buff:
+    baseValue: 0
+  cost:
+    baseValue: 1
+  attackRange: 1
+  attackRate: 2
+  posOnBoard: {x: 0, y: 0}

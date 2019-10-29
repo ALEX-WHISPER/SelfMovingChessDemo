@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8607429029176735142}
   - component: {fileID: 8607429029176735144}
   - component: {fileID: 8607429029176735145}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: healthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 8607429029578446337}
   - component: {fileID: 8607429029578446398}
   - component: {fileID: 8607429029578446399}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,7 +111,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 58.212, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.013, y: 0.656}
+  m_AnchoredPosition: {x: -0.013, y: 2}
   m_SizeDelta: {x: 354.307, y: 83.765}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &8607429029578446336
@@ -198,7 +198,7 @@ GameObject:
   - component: {fileID: 8607429029754471401}
   - component: {fileID: 8607429029754471398}
   - component: {fileID: 8607429029754471399}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,7 +307,6 @@ MonoBehaviour:
   displayText: 0
   barText: {fileID: 0}
   additionalText: 
-  chessStat: {fileID: 8607429030931739851}
 --- !u!1 &8607429030931739840
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,13 +316,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8607429030931739844}
-  - component: {fileID: 8607429030931739845}
-  - component: {fileID: 8607429030931739842}
-  - component: {fileID: 8607429030931739843}
+  - component: {fileID: 407838336}
   - component: {fileID: 8607429030931739848}
   - component: {fileID: 8607429030931739849}
   - component: {fileID: 8607429030931739847}
-  - component: {fileID: 8607429030931739851}
   m_Layer: 10
   m_Name: Enemy_White
   m_TagString: Untagged
@@ -339,61 +335,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8607429030931739840}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.5, y: 0.5, z: 5.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 8607429029578446396}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8607429030931739845
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8607429030931739840}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &8607429030931739842
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8607429030931739840}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!135 &8607429030931739843
-SphereCollider:
+--- !u!136 &407838336
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -402,9 +352,10 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Radius: 0.4
+  m_Height: 1.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.83, z: 0}
 --- !u!195 &8607429030931739848
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -452,11 +403,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 907fe56673d4a7a48b0b1efa65db69c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1
+  propTemplate: {fileID: 11400000, guid: c7b302203103217478163e0e92140fa9, type: 2}
   radiusOffset: {x: 0, y: 0, z: 0}
-  attackCountPerSecond: 2
   attackDelay: 0.5
-  _chessType: 1
   isPlayer: 0
   layer_Ground:
     serializedVersion: 2
@@ -464,21 +413,3 @@ MonoBehaviour:
   layer_Enemy:
     serializedVersion: 2
     m_Bits: 0
-  Position: {x: 0, y: 0}
---- !u!114 &8607429030931739851
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8607429030931739840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92b994825b3d1904cb2563072b952278, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 500
-  damage:
-    baseValue: 5
-  buff:
-    baseValue: 0

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c9e9907f915a64ebf870d675cc6950, type: 3}
+  m_Name: Template_Gray
+  m_EditorClassIdentifier: 
+  camp: 1
+  character: 0
+  chessName: Enemy_Gray
+  _gfx: {fileID: 168930463611787969, guid: 8097ea1050248cc4398b2661b3756984, type: 3}
+  damageAmout:
+    baseValue: 4
+  maxHealth:
+    baseValue: 100
+  buff:
+    baseValue: 0
+  cost:
+    baseValue: 0
+  attackRange: 1.5
+  attackRate: 2
+  posOnBoard: {x: 0, y: 0}

@@ -56,8 +56,7 @@ public partial class BoardManager : MonoBehaviour {
     }
 
     void Update() {
-        //CreateBoardLayout();
-
+        
         if (Input.GetKeyDown(KeyCode.Space) && !isBonded) {
             GameManager.Instance.BindingFocus();
             isBonded = true;
@@ -141,13 +140,13 @@ public partial class BoardManager : MonoBehaviour {
 
     // 某棋子死后退出战场-从战斗列表中移除
     public void QuitBoardField(ChessController _chess) {
-        if (_chess._chessType == ChessType.SELF_SIDE) {
+        if (_chess.Camp == ChessCamp.SELF_SIDE) {
             if (selfSideChessList.Contains(_chess)) {
                 selfSideChessList.Remove(_chess);
             }
         }
 
-        if (_chess._chessType == ChessType.OTHER_SIDE) {
+        if (_chess.Camp == ChessCamp.OTHER_SIDE) {
             if (otherSideChessList.Contains(_chess)) {
                 otherSideChessList.Remove(_chess);
             }
@@ -191,17 +190,18 @@ public partial class BoardManager : MonoBehaviour {
         return Vector3.zero;
     }
 
-    private void OnChessPurchasedCallback(ChessHero character) {
+    private void OnChessPurchasedCallback(ChessType character) {
         // select available position in backup field
         var _pos = GetFirstAvailableFromBackupField();
 
         // instatiate it
-        var _prefab = chessPrefab_SelfSide.Where(c=>c.GetComponent<ChessController>()._chessCharacter == character).First();
+        var _prefab = chessPrefab_SelfSide.Where(c=>c.GetComponent<ChessController>().CharacterType == character).First();
         var _go = Instantiate(_prefab, _pos, _prefab.transform.localRotation);
 
         // move to
         InitChessToBackupField(_go.GetComponent<ChessController>(), _pos);
     }
+
     #region unused
     public bool IsSelected {
         get {

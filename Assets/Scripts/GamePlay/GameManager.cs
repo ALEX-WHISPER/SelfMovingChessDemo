@@ -6,7 +6,7 @@ using System.Linq;
 
 public class GameManager: SingletonBase<GameManager> {
     
-    public Action<ChessHero> OnChessPurchased;
+    public Action<ChessType> OnChessPurchased;
     public Action OnSelfSideVictory;
     public Action OnOtherSideVictory;
 
@@ -27,7 +27,14 @@ public class GameManager: SingletonBase<GameManager> {
         };
     }
 
-    public void PurchaseChessToBackup(ChessHero chessHero) {
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.Space) && !isBonded) {
+            BindingFocus();
+            isBonded = true;
+        }
+    }
+
+    public void PurchaseChessToBackup(ChessType chessHero) {
         OnChessPurchased?.Invoke(chessHero);
     }
 

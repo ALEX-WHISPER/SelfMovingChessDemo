@@ -4,27 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public enum ChessType { SELF_SIDE, OTHER_SIDE }
-public enum ChessHero { SWORD, AXE, KNIGHT, MUTANT, ARCHER }
+public enum ChessCamp { SELF_SIDE, OTHER_SIDE }
+public enum ChessType { NONE, SWORD, AXE, KNIGHT, MUTANT, ARCHER }
 
 [RequireComponent(typeof(ChessMotor))]
-[RequireComponent(typeof(ChessStat))]
 public class ChessController : MonoBehaviour {
 
-    [SerializeField]
-    private float radius = 1f;
+    public ChessProp propTemplate;
+    private ChessProp chessProp;
+    
     public Vector3 radiusOffset = Vector3.zero;
-    public int attackCountPerSecond = 2;
     public float attackDelay = 0.5f;
-
-    public ChessType _chessType;
-    public ChessHero _chessCharacter;
+    
     public bool isPlayer = false;
     public LayerMask layer_Ground;
     public LayerMask layer_Enemy;
 
     private ChessMotor _motor;
-    private ChessStat _stat;
     private BoardManager _boardManager;
     private AnimManager _anim;
 
@@ -34,14 +30,24 @@ public class ChessController : MonoBehaviour {
 
     private bool isBeingFocus = false;
     private bool hasInteracted = false;
+    public int CurrentHealth { get; private set; }
+    public bool IsDead { get { return CurrentHealth <= 0; } }
 
     public Action<ChessController> GotFocused; // 被锁定
     public Action<ChessController> GotDefocused; // 被取消锁定
 
-    public Vector2 Position;
+    public Action<float, float> OnDamageTaken;
+    public Action<ChessController> OnChessDied;
+
+    #region properties
+    public ChessType CharacterType { get { return propTemplate.character; } }
+    public ChessCamp Camp { get { return propTemplate.camp; } }
+    public float Radius { get { return propTemplate.attackRange; } }
+    public Vector2 Position { get { return chessProp.posOnBoard; } set { chessProp.posOnBoard = value; } }
+
     public ChessController Target { get { return targetChess; } }
     public List<ChessController> SeekerList { get { return seekerChessList; } }
-    public float Radius { get { return radius; } }
+    #endregion
 
     private void EventsRegister() {
         GotFocused += (_seeker) => {
@@ -66,12 +72,7 @@ public class ChessController : MonoBehaviour {
 
             Debug.Log($"{_seeker.name} has defocused on {transform.name}");
         };
-
-        _stat.OnCharacterDie += (stat) => {
-            if (_anim != null) _anim.AttackFinished?.Invoke(false);
-            OnChessDieCallback();
-        };
-
+        
         _motor.OnReachedDestination += (targetTransform) => {
             if (_anim != null) _anim.StartAttacking?.Invoke();
             Fight();
@@ -79,54 +80,39 @@ public class ChessController : MonoBehaviour {
     }
 
     void OnDrawGizmosSelected() {
+        if (chessProp == null) {
+            return;
+        }
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position + radiusOffset, radius);
+        Gizmos.DrawWireSphere(transform.position + radiusOffset, chessProp.attackRange);
     }
 
     void Awake() {
         _motor = transform.GetComponent<ChessMotor>();
-        _stat = transform.GetComponent<ChessStat>();
         _boardManager = GameObject.FindWithTag("GameBoard").GetComponent<BoardManager>();
-        _anim = GetComponentInChildren<AnimManager>();
+
+        // create scriptable object
+        chessProp = ScriptableObject.CreateInstance<ChessProp>();
+        chessProp.Init(propTemplate);
+        CurrentHealth = chessProp.maxHealth.GetValue;
     }
 
     void Start() {
         EventsRegister();
 
-        if (_anim != null) _anim.SetReady?.Invoke();
+        Instantiate(chessProp._gfx, transform);
+        _anim = GetComponentInChildren<AnimManager>();
+
+        if (_anim != null)
+            _anim.SetReady?.Invoke();
     }
-
-    void Update() {
-        if (Input.GetMouseButtonDown(1) && isPlayer) {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            
-            if (Physics.Raycast(ray, out hit, 100f, layer_Enemy)) {
-                var target = hit.collider.GetComponent<ChessController>();
-                if (target != null) {
-                    SetFocus(target);
-                }
-            }
-            
-            if (Physics.Raycast(ray, out hit, 100f, layer_Ground)) {
-                if (_boardManager.IsSelected) {
-                    RemoveFocus();
-                    _motor.MoveToward(_boardManager.SelectedTilePos);
-                }
-            }
-        }
-
-        //if (isBeingFocus && !hasInteracted) {
-        //    WaitingSeeker();
-        //}
-    }
-
-    #region offensive side
+    
+    #region path finding
     public void SeekForNextTarget() {
         int seekingRange = 0;
         ChessController newTarget = null;
 
-        if (_chessType == ChessType.SELF_SIDE) {
+        if (Camp == ChessCamp.SELF_SIDE) {
             seekingRange = _boardManager.GetChessList_OtherSide.Count;
             if (seekingRange <= 0) {
                 return;
@@ -134,7 +120,7 @@ public class ChessController : MonoBehaviour {
             newTarget = _boardManager.GetChessList_OtherSide[UnityEngine.Random.Range(0, seekingRange)];
         }
 
-        if (_chessType == ChessType.OTHER_SIDE) {
+        if (Camp == ChessCamp.OTHER_SIDE) {
             seekingRange = _boardManager.GetChessList_SelfSide.Count;
             if (seekingRange <= 0) {
                 return;
@@ -149,15 +135,13 @@ public class ChessController : MonoBehaviour {
         if (targetChess == newTarget || newTarget == null) {
             return;
         }
-
-        //if (targetChess != null) {
-        //    targetChess.GotDefocused?.Invoke(this); // defocus the previous target
-        //}
-
+        
         targetChess = newTarget; // assign new focus
         newTarget.GotFocused?.Invoke(this);    // focus the new target
 
-        if (_anim != null) _anim.MovingToTarget?.Invoke();
+        if (_anim != null)
+            _anim.MovingToTarget?.Invoke();
+
         _motor.SetTracingTarget(newTarget); // trace the new target
     }
 
@@ -169,16 +153,58 @@ public class ChessController : MonoBehaviour {
         targetChess = null;
         _motor.RemoveTracingTarget();
     }
+    #endregion
 
+    #region attack manager
     public void Fight() {
         if (targetChess == null) {
             return;
         }
-        fightCoroutine = ContinuouslyAttackEnemy(targetChess.GetComponent<ChessStat>());
+        fightCoroutine = ContinuouslyAttackEnemy(targetChess.GetComponent<ChessController>());
         StartCoroutine(fightCoroutine);
     }
 
-    public void OnChessDieCallback() {
+    IEnumerator ContinuouslyAttackEnemy(ChessController enemyChess) {
+        yield return new WaitForSeconds(attackDelay);
+        
+        if (enemyChess == null || IsDead) {
+            yield break;
+        }
+
+        while (!enemyChess.IsDead && !IsDead) {
+            enemyChess.TakeDamage(this);
+            yield return new WaitForSeconds(1.0f / chessProp.attackRate);
+        }
+    }
+    // get damaged by enemy
+    public void TakeDamage(ChessController enemyController) {
+        if (enemyController == null || IsDead) {
+            return;
+        }
+
+        var damageAmount = enemyController.chessProp.damageAmout.GetValue;
+
+        if (damageAmount < 0) {
+            return;
+        }
+
+        if (chessProp.buff.GetValue > 0) {
+            damageAmount -= chessProp.buff.GetValue;
+            damageAmount = Mathf.Clamp(damageAmount, 0, chessProp.maxHealth.GetValue);
+        }
+
+        CurrentHealth -= damageAmount;
+        OnDamageTaken?.Invoke(CurrentHealth, chessProp.maxHealth.GetValue);
+
+        if (CurrentHealth <= 0) {
+            Die();
+        }
+    }
+
+    private void Die() {
+        Debug.Log($"{transform.name} died");
+        if (_anim != null) _anim.AttackFinished?.Invoke(false);
+
         // stop fighting
         if (fightCoroutine != null) {
             StopCoroutine(fightCoroutine);
@@ -203,26 +229,11 @@ public class ChessController : MonoBehaviour {
         }
 
         gameObject.SetActive(false);
-    }
 
-    IEnumerator ContinuouslyAttackEnemy(ChessStat fightingStat) {
-        yield return new WaitForSeconds(attackDelay);
-
-        if (_stat == null || _stat.IsDead) {
-            yield break;
-        }
-
-        if (fightingStat == null) {
-            yield break;
-        }
-
-        while (!fightingStat.IsDead && !_stat.IsDead) {
-            _stat.Attack(fightingStat);
-            yield return new WaitForSeconds(1.0f / attackCountPerSecond);
-        }
+        OnChessDied?.Invoke(this);
     }
     #endregion
-    
+
     void OnMouseOver() {
         InteractEventsManager.MouseEnterInteractable?.Invoke();
     }

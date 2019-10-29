@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class HealthBarManager : SimpleHealthBar {
 
-    public CharacterStat chessStat;
+    private ChessController chessController;
+
+    private void Awake() {
+        chessController = GetComponentInParent<ChessController>();
+    }
 
     void Start() {
-        chessStat.OnDamageTaken += this.UpdateBar;
+        chessController.OnDamageTaken += this.UpdateBar;
     }
 }

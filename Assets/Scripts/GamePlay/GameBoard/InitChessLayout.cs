@@ -23,7 +23,6 @@ public partial class BoardManager : MonoBehaviour {
 
                 var _controller = chess.GetComponent<ChessController>();
                 if (_controller != null) {
-                    _controller._chessType = ChessType.OTHER_SIDE;
                     otherSideChessList.Add(_controller);
                     _controller.Position = new Vector2(rowIndex, colIndex);
                 }
