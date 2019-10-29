@@ -12,7 +12,9 @@ public class ChessMotor : MonoBehaviour {
 
     private Transform target;
     private NavMeshAgent _agent;
+    private NavMeshObstacle _obstacle;
     private bool hasCheckedWhetherReach = false;
+    private bool freezeAll = false;
     
     private void EventsRegister() {
         InteractEventsManager.MouseDragging += () => {
@@ -30,30 +32,50 @@ public class ChessMotor : MonoBehaviour {
 
     void Awake() {
         _agent = GetComponent<NavMeshAgent>();
+        _obstacle = GetComponent<NavMeshObstacle>();
     }
 
     void Start() {
         EventsRegister();
+
+        _obstacle.enabled = false;
+        _agent.enabled = true;
     }
 
     void Update() {
-        if (target != null) {
+        if (freezeAll) {
+            return;
+        }
+
+        if (target != null && !CheckReached()) {
             FaceRotation();
             MoveToward(target.position);
         }
 
         if (!hasCheckedWhetherReach && target != null) {
-            if(CheckReached()) {
+            if (CheckReached()) {
+                _agent.enabled = false;
+                _obstacle.enabled = true;
+
                 OnReachedDestination?.Invoke(target);
                 hasCheckedWhetherReach = true;
             }
         }
     }
 
+    public void FreezeMotorFunction() {
+        freezeAll = true;
+    }
+
+    public void LaunchMotorFunction() {
+        freezeAll = false;
+    }
+
     // move towards a specified point
     public void MoveToward(Vector3 point) {
+        _obstacle.enabled = false;
         _agent.enabled = true;
-        _agent.SetDestination(point);
+        _agent.SetDestination(point);        
     }
     
     // the hero will start to tracing once the target has been set
@@ -84,17 +106,18 @@ public class ChessMotor : MonoBehaviour {
     
     // check whether the agent reached the destination
     private bool CheckReached() {
-        if (_agent.pathPending) {
-            return false;
-        }
-        if (!(_agent.remainingDistance <= _agent.stoppingDistance)) {
-            return false;
-        }
+        //if (_agent.pathPending) {
+        //    return false;
+        //}
+        //if (!(_agent.remainingDistance <= _agent.stoppingDistance)) {
+        //    return false;
+        //}
 
-        if (!_agent.hasPath || _agent.velocity.sqrMagnitude == 0f) {
-            return true;
-        } else {
-            return false;
-        }
+        //if (!_agent.hasPath || _agent.velocity.sqrMagnitude == 0f) {
+        //    return true;
+        //} else {
+        //    return false;
+        //}
+        return (target.position - transform.position).sqrMagnitude <= Mathf.Pow(_agent.stoppingDistance, 2);
     }
 }

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4976580387128382029}
   - component: {fileID: 4976580387128382035}
   - component: {fileID: 4976580387128382032}
+  - component: {fileID: 1677791025}
   m_Layer: 11
   m_Name: ChessHero_Mutant
   m_TagString: Untagged
@@ -146,6 +147,22 @@ MonoBehaviour:
     baseValue: 10
   buff:
     baseValue: 3
+--- !u!208 &1677791025
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4976580387128382037}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 0
+  m_Extents: {x: 1, y: 1, z: 1}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0.8, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &4976580387334437339
 GameObject:
   m_ObjectHideFlags: 0

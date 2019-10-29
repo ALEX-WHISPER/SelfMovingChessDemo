@@ -38,6 +38,7 @@ public class ChessController : MonoBehaviour {
 
     public Action<float, float> OnDamageTaken;
     public Action<ChessController> OnChessDied;
+    public Action<bool> OnGameOver;
 
     #region properties
     public ChessType CharacterType { get { return propTemplate.character; } }
@@ -76,6 +77,16 @@ public class ChessController : MonoBehaviour {
         _motor.OnReachedDestination += (targetTransform) => {
             if (_anim != null) _anim.StartAttacking?.Invoke();
             Fight();
+        };
+
+        GameManager.Instance.OnSelfSideVictory += () => {
+            OnGameOver?.Invoke(true);
+            _motor.FreezeMotorFunction();
+        };
+
+        GameManager.Instance.OnOtherSideVictory += () => {
+            OnGameOver.Invoke(false);
+            _motor.FreezeMotorFunction();
         };
     }
 
@@ -228,7 +239,8 @@ public class ChessController : MonoBehaviour {
             GotDefocused?.Invoke(seekerChessList[i]);
         }
 
-        gameObject.SetActive(false);
+        transform.Find("Canvas").gameObject.SetActive(false);
+        //gameObject.SetActive(false);
 
         OnChessDied?.Invoke(this);
     }
