@@ -47,12 +47,15 @@ public class PurchaseSlot : MonoBehaviour, IPointerClickHandler {
 
         // double click
         if ((lastClick + interval) > Time.time) {
-            //Debug.Log($"double click {transform.name}");
-            var character = slotGfx.GetComponent<Character>();
-            GameManager.Instance.PurchaseChessToBackup(character.characterType);
+            var prop = slotGfx.GetComponent<Character>()._chessProp;
 
-            if (slotGfx != null)
+            if (!GameManager.Instance.PurchaseChessToBackup(prop)) {
+                return;
+            }
+
+            if (slotGfx != null) {
                 slotGfx.SetActive(false);
+            }
 
             allowedToPurchase = false;
         } else {

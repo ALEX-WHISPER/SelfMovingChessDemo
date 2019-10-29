@@ -23,7 +23,7 @@ MonoBehaviour:
   buff:
     baseValue: 0
   cost:
-    baseValue: 1
+    baseValue: 2
   attackRange: 1
   attackRate: 2
   posOnBoard: {x: 0, y: 0}

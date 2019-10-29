@@ -1,45 +1,51 @@
 ﻿
 using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class Stat {
 
-    [UnityEngine.SerializeField]
+    [SerializeField]
     private int baseValue;
-
-    // 本属性点数修改列表，每个元素的值表示其对该属性点数的增量
-    private List<int> modifiers;
     
     public Stat() {
-        this.baseValue = 100;
-        modifiers = new List<int>();
+        this.baseValue = 0;
     }
 
     public Stat(int val) {
-        modifiers = new List<int>();
         this.baseValue = val;
     }
 
     public int GetValue {
         get {
-            var totalValue = baseValue;
-            for (int i = 0; i < modifiers.Count; i++) {
-                totalValue += modifiers[i];
-            }
-            return totalValue;
-            //return baseValue;
+            return baseValue;
         }
     }
 
-    public void AddModifier(int _modifier) {
-        if (_modifier != 0) {
-            modifiers.Add(_modifier);
-        }
+    public void Set(int val) {
+        this.baseValue = val;
     }
 
-    public void RemoveModifier(int _modifier) {
-        if (_modifier != 0) {
-            modifiers.Remove(_modifier);
+    public void Increase() {
+        Increase(1);
+    }
+
+    public void Decrease() {
+        Decrease(1);
+    }
+
+    public void Increase(int step) {
+        if (step <= 0) {
+            return;
         }
+        this.baseValue += step;
+    }
+
+    public void Decrease(int step) {
+        if (step <= 0) {
+            return;
+        }
+        this.baseValue -= step;
+        this.baseValue = Mathf.Clamp(this.baseValue, 0, int.MaxValue);
     }
 }

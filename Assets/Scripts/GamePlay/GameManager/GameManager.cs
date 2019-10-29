@@ -5,25 +5,40 @@ using UnityEngine;
 using System.Linq;
 
 public class GameManager: SingletonBase<GameManager> {
-    
-    public Action<ChessType> OnChessPurchased;
-    public Action OnSelfSideVictory;
-    public Action OnOtherSideVictory;
 
+    [SerializeField]
+    private GameProp _gameProp;
     private BoardManager _boardManager;
     private bool isBonded = false;
 
+    public Action<bool> OnRoundFinished;
+
     void Awake() {
         _boardManager = GameObject.FindWithTag("GameBoard").GetComponent<BoardManager>();
+        _gameProp.Init();
     }
 
     private void OnEnable() {
-        OnSelfSideVictory += () => {
-            Debug.Log("VICTORY!");
+        // 棋子数量发生变化
+        _boardManager.OnChessListChanged += (selfCount, otherCount) => {
+            _gameProp.OnChessCountChanged?.Invoke(selfCount, otherCount);
         };
 
-        OnOtherSideVictory += () => {
-            Debug.Log("DEFEATED!");
+        // 本局胜
+        _gameProp.OnRoundWin += () => {
+            OnRoundFinished?.Invoke(true);
+            Debug.Log($"Round {_gameProp.RoundNo}: WIN");
+        };
+
+        // 本局败
+        _gameProp.OnRoundDefeat += (step) => {
+            OnRoundFinished?.Invoke(false);
+            Debug.Log($"Round {_gameProp.RoundNo}: DEFEAT");
+        };
+
+        // 游戏结束
+        _gameProp.OnGameOver += (isWin) => {
+            Debug.Log($"GameOver: {isWin}");
         };
     }
 
@@ -34,8 +49,16 @@ public class GameManager: SingletonBase<GameManager> {
         }
     }
 
-    public void PurchaseChessToBackup(ChessType chessHero) {
-        OnChessPurchased?.Invoke(chessHero);
+    public bool PurchaseChessToBackup(ChessProp prop) {
+        if (prop.cost.GetValue > _gameProp.TreasureAmount) {
+            Debug.Log("Out of money!");
+            return false;
+        }
+
+        _boardManager.SetNewChessToBackupField(prop);
+        _gameProp.OnTreasureDecreased(prop.cost.GetValue);
+
+        return true;
     }
 
     #region AI 战斗关系绑定

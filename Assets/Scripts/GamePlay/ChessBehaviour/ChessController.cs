@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-
+using UnityEngine.UI;
+//cc6733 9DBE55
 public enum ChessCamp { SELF_SIDE, OTHER_SIDE }
 public enum ChessType { NONE, SWORD, AXE, KNIGHT, MUTANT, ARCHER }
 
 [RequireComponent(typeof(ChessMotor))]
 public class ChessController : MonoBehaviour {
-
+    
     public ChessProp propTemplate;
     private ChessProp chessProp;
     
@@ -19,6 +20,9 @@ public class ChessController : MonoBehaviour {
     public bool isPlayer = false;
     public LayerMask layer_Ground;
     public LayerMask layer_Enemy;
+
+    private Color healthBarColor_Self = new Color(0x9d, 0xbe, 0x55);
+    private Color healthBarColor_Other = new Color(0xcc, 0x67, 0x33);
 
     private ChessMotor _motor;
     private BoardManager _boardManager;
@@ -38,7 +42,7 @@ public class ChessController : MonoBehaviour {
 
     public Action<float, float> OnDamageTaken;
     public Action<ChessController> OnChessDied;
-    public Action<bool> OnGameOver;
+    public Action<bool> OnRoundOver;
 
     #region properties
     public ChessType CharacterType { get { return propTemplate.character; } }
@@ -79,14 +83,14 @@ public class ChessController : MonoBehaviour {
             Fight();
         };
 
-        GameManager.Instance.OnSelfSideVictory += () => {
-            OnGameOver?.Invoke(true);
+        GameManager.Instance.OnRoundFinished += (isSelfWin) => {
             _motor.FreezeMotorFunction();
-        };
 
-        GameManager.Instance.OnOtherSideVictory += () => {
-            OnGameOver.Invoke(false);
-            _motor.FreezeMotorFunction();
+            if (isSelfWin) {
+                if (_anim != null) {
+                    _anim.AttackFinished?.Invoke(true);
+                }
+            }
         };
     }
 
@@ -117,7 +121,7 @@ public class ChessController : MonoBehaviour {
         if (_anim != null)
             _anim.SetReady?.Invoke();
     }
-    
+
     #region path finding
     public void SeekForNextTarget() {
         int seekingRange = 0;

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
 
 public class Character : MonoBehaviour {
-    public ChessType characterType;
+    public ChessProp _chessProp;
 }

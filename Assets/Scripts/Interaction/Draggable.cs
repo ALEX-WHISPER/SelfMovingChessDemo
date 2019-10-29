@@ -73,7 +73,7 @@ public class Draggable : MonoBehaviour {
 
         isCheckSelection = false;
         
-        boardManager.OnChessSetOnBoard?.Invoke(chess, pos_from, pos_to);
+        boardManager.MoveChess(chess, pos_from, pos_to);
         InteractEventsManager.MouseDoneDrag?.Invoke();
     }
     

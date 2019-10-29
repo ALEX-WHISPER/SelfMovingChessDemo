@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -15,15 +16,16 @@ public partial class BoardManager : MonoBehaviour {
     private float selected_X;
     private float selected_Y;
     private bool isBoardInteractable = true;
-    
+
+    public Action<int, int> OnChessListChanged;
+
     [SerializeField]
     private List<ChessController> otherSideChessList = new List<ChessController>();
     [SerializeField]
     private List<ChessController> selfSideChessList = new List<ChessController>();
     [SerializeField]
     private int[,] boardOccupiedStatus = new int[8, 8];
-
-    public System.Action<ChessController, Vector2, Vector2> OnChessSetOnBoard;
+    
     public List<ChessController> GetChessList_OtherSide { get { return this.otherSideChessList; } }
     public List<ChessController> GetChessList_SelfSide { get { return this.selfSideChessList; } }
 
@@ -46,9 +48,6 @@ public partial class BoardManager : MonoBehaviour {
         InteractEventsManager.MouseDoneDrag += () => { isBoardInteractable = true; };
         InteractEventsManager.MouseEnterInteractable += () => { isBoardInteractable = false; };
         InteractEventsManager.MouseLeaveInteractable += () => { isBoardInteractable = true; };
-
-        OnChessSetOnBoard += MoveChess;
-        GameManager.Instance.OnChessPurchased += OnChessPurchasedCallback;
     }
 
     void Start() {
@@ -82,7 +81,7 @@ public partial class BoardManager : MonoBehaviour {
     }
 
     // 移动棋子
-    private void MoveChess(ChessController chess, Vector2 pos_from, Vector2 pos_to) {
+    public void MoveChess(ChessController chess, Vector2 pos_from, Vector2 pos_to) {
         if (chess == null) {
             return;
         }
@@ -114,6 +113,7 @@ public partial class BoardManager : MonoBehaviour {
             boardOccupiedStatus[(int)pos_to.x, (int)pos_to.y] = 1;
             chess.Position = pos_to;
         }
+        OnChessListChanged(selfSideChessList.Count, otherSideChessList.Count);
     }
 
     private void InitChessToBackupField(ChessController chess, Vector3 pos_to) {
@@ -121,10 +121,10 @@ public partial class BoardManager : MonoBehaviour {
             return;
         }
 
-        // 从战斗列表中移除
-        if (selfSideChessList.Contains(chess)) {
-            selfSideChessList.Remove(chess);
-        }
+        //// 从战斗列表中移除
+        //if (selfSideChessList.Contains(chess)) {
+        //    selfSideChessList.Remove(chess);
+        //}
 
         // 备战格位置-1
         boardOccupiedStatus[(int)pos_to.x, (int)pos_to.y] = -1;
@@ -154,13 +154,7 @@ public partial class BoardManager : MonoBehaviour {
 
         ResetBoardSlot((int)_chess.Position.x, (int)_chess.Position.y);
 
-        if (selfSideChessList.Count == 0) {
-            GameManager.Instance.OnOtherSideVictory?.Invoke();
-        }
-
-        if (otherSideChessList.Count == 0) {
-            GameManager.Instance.OnSelfSideVictory?.Invoke();
-        }
+        OnChessListChanged?.Invoke(selfSideChessList.Count, otherSideChessList.Count);
     }
     
     // i: 横向行序，j: 纵向列序
@@ -180,7 +174,7 @@ public partial class BoardManager : MonoBehaviour {
         return true;
     }
 
-    public Vector3 GetFirstAvailableFromBackupField() {
+    private Vector3 GetFirstAvailableFromBackupField() {
         for (int i = 0; i < boardOccupiedStatus.GetLength(0); i++) {
             if (boardOccupiedStatus[i, 0] == 0) {
                 return GetTileCenter(i, 0);
@@ -190,12 +184,13 @@ public partial class BoardManager : MonoBehaviour {
         return Vector3.zero;
     }
 
-    private void OnChessPurchasedCallback(ChessType character) {
+    // 将购买的棋子置入备战区
+    public void SetNewChessToBackupField(ChessProp prop) {
         // select available position in backup field
         var _pos = GetFirstAvailableFromBackupField();
 
         // instatiate it
-        var _prefab = chessPrefab_SelfSide.Where(c=>c.GetComponent<ChessController>().CharacterType == character).First();
+        var _prefab = chessPrefab_SelfSide.Where(c=>c.GetComponent<ChessController>().CharacterType == prop.character).First();
         var _go = Instantiate(_prefab, _pos, _prefab.transform.localRotation);
 
         // move to

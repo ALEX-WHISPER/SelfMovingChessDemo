@@ -30,7 +30,7 @@ public partial class BoardManager : MonoBehaviour {
                 break;
             }
         }
-
+        OnChessListChanged?.Invoke(selfSideChessList.Count, otherSideChessList.Count);
     }
 
     private bool GetAvailableSlot(out int rowIndex, out int colIndex) {

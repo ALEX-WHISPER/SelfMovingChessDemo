@@ -256,7 +256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.8301887, b: 0.2171754, a: 1}
+  m_Color: {r: 0.8, g: 0.40392157, b: 0.2, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -285,7 +285,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   barImage: {fileID: 3910656748696107965}
   colorMode: 0
-  barColor: {r: 0, g: 0.8313726, b: 0.21568629, a: 1}
+  barColor: {r: 0.8, g: 0.40392157, b: 0.2, a: 1}
   barGradient:
     serializedVersion: 2
     key0: {r: 1, g: 1, b: 1, a: 1}

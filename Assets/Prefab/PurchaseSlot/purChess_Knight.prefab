@@ -1445,7 +1445,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c558a61226a3a244c83b08127b8810d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterType: 3
+  _chessProp: {fileID: 11400000, guid: ee726f96c0820dd419b7d98b67fd0307, type: 2}
 --- !u!1 &5244414491324783488
 GameObject:
   m_ObjectHideFlags: 0

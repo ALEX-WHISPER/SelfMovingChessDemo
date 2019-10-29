@@ -786,7 +786,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c558a61226a3a244c83b08127b8810d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterType: 1
+  _chessProp: {fileID: 11400000, guid: c88568d0b6209634393176ae7cb47b65, type: 2}
 --- !u!1 &3418519420799529172
 GameObject:
   m_ObjectHideFlags: 0

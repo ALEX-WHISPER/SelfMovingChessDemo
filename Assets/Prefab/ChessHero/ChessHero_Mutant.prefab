@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 4976580387128382033}
   - component: {fileID: 4976580387128382029}
   - component: {fileID: 4976580387128382035}
-  - component: {fileID: 4976580387128382032}
   - component: {fileID: 1677791025}
   m_Layer: 11
   m_Name: ChessHero_Mutant
@@ -130,23 +129,8 @@ MonoBehaviour:
   layer_Enemy:
     serializedVersion: 2
     m_Bits: 1024
---- !u!114 &4976580387128382032
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4976580387128382037}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92b994825b3d1904cb2563072b952278, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  damage:
-    baseValue: 10
-  buff:
-    baseValue: 3
+  healthBarColor_Self: {r: 0, g: 0, b: 0, a: 0}
+  healthBarColor_Other: {r: 0, g: 0, b: 0, a: 0}
 --- !u!208 &1677791025
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -408,7 +392,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.8301887, b: 0.2171754, a: 1}
+  m_Color: {r: 0.6156863, g: 0.74509805, b: 0.33333334, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -437,7 +421,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   barImage: {fileID: 4976580387767563750}
   colorMode: 0
-  barColor: {r: 0, g: 0.8313726, b: 0.21568629, a: 1}
+  barColor: {r: 0.6156863, g: 0.74509805, b: 0.33333334, a: 1}
   barGradient:
     serializedVersion: 2
     key0: {r: 1, g: 1, b: 1, a: 1}
