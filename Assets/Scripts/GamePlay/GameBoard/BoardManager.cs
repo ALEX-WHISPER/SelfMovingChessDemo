@@ -8,10 +8,13 @@ public partial class BoardManager : MonoBehaviour {
 
     public int boardRowCount = 8;
     public int boardColCount = 8;
+    public GameProp _gameProp;
+
+    public Transform chessHolder_SelfSide;
+    public Transform chessHolder_OtherSide;
     
     private const int TILE_SIZE = 1;
     private const float TILE_OFFSET = 0.5f;
-    private bool isBonded = false;
 
     private float selected_X;
     private float selected_Y;
@@ -49,23 +52,12 @@ public partial class BoardManager : MonoBehaviour {
         InteractEventsManager.MouseDoneDrag += () => { isBoardInteractable = true; };
         InteractEventsManager.MouseEnterInteractable += () => { isBoardInteractable = false; };
         InteractEventsManager.MouseLeaveInteractable += () => { isBoardInteractable = true; };
-
-        GameManager.Instance.OnPreparationProceeded += () => { isChessMovable = true; };
-        GameManager.Instance.OnPreparationFinished += () => { isChessMovable = false; };
     }
 
     void Start() {
-        InitChessLayout();
+        //InitChessLayout();
     }
-
-    void Update() {
-        
-        if (Input.GetKeyDown(KeyCode.Space) && !isBonded) {
-            GameManager.Instance.BindingFocus();
-            isBonded = true;
-        }
-    }
-
+    
     // 可视化棋盘
     private void CreateBoardLayout() {
         var widthVector = Vector3.right * boardColCount;
@@ -106,6 +98,12 @@ public partial class BoardManager : MonoBehaviour {
 
         // 将棋子放入战斗区
         else {
+            
+            // 若场上棋子数已超过本轮最大可战斗棋子数，则无法移动
+            if (_gameProp.MaxChessNum <= selfSideChessList.Count) {
+                chess.Position = pos_from;
+                return;
+            }
 
             // 加入至战斗列表
             if (!selfSideChessList.Contains(chess)) {
@@ -120,47 +118,7 @@ public partial class BoardManager : MonoBehaviour {
         OnChessListChanged(selfSideChessList.Count, otherSideChessList.Count);
     }
 
-    private void InitChessToBackupField(ChessController chess, Vector3 pos_to) {
-        if (chess == null) {
-            return;
-        }
-
-        //// 从战斗列表中移除
-        //if (selfSideChessList.Contains(chess)) {
-        //    selfSideChessList.Remove(chess);
-        //}
-
-        // 备战格位置-1
-        boardOccupiedStatus[(int)pos_to.x, (int)pos_to.y] = -1;
-        chess.Position = pos_to;
-    }
-
-    // 置空棋盘中的指定位置
-    private void ResetBoardSlot(int i, int j) {
-        if (i < boardOccupiedStatus.GetLength(0) && j < boardOccupiedStatus.GetLength(1)) {
-            boardOccupiedStatus[i, j] = 0;
-        }
-    }
-
-    // 某棋子死后退出战场-从战斗列表中移除
-    public void QuitBoardField(ChessController _chess) {
-        if (_chess.Camp == ChessCamp.SELF_SIDE) {
-            if (selfSideChessList.Contains(_chess)) {
-                selfSideChessList.Remove(_chess);
-            }
-        }
-
-        if (_chess.Camp == ChessCamp.OTHER_SIDE) {
-            if (otherSideChessList.Contains(_chess)) {
-                otherSideChessList.Remove(_chess);
-            }
-        }
-
-        ResetBoardSlot((int)_chess.Position.x, (int)_chess.Position.y);
-
-        OnChessListChanged?.Invoke(selfSideChessList.Count, otherSideChessList.Count);
-    }
-    
+    // 获取棋盘矩阵中指定坐标的实际位置
     // i: 横向行序，j: 纵向列序
     public Vector3 GetTileCenter(int i, int j) {
         if (!IsInRange(i, j)) {
@@ -177,7 +135,50 @@ public partial class BoardManager : MonoBehaviour {
 
         return true;
     }
+    
+    // 清除指定格位
+    private void ResetBoardSlot(int i, int j) {
+        if (i < boardOccupiedStatus.GetLength(0) && j < boardOccupiedStatus.GetLength(1)) {
+            boardOccupiedStatus[i, j] = 0;
+        }
+    }
 
+    #region backup field
+    // 将购买的棋子置入备战区
+    public void SetNewChessToBackupField(ChessProp prop) {
+        // select available position in backup field
+        var _pos = GetFirstAvailableFromBackupField();
+
+        // no more room in backup field
+        if (_pos.sqrMagnitude == 0) {
+            return;
+        }
+
+        // instatiate it
+        var _prefab = chessPrefab_SelfSide.Where(c => c.GetComponent<ChessController>().CharacterType == prop.character).First();
+        var _go = Instantiate(_prefab, _pos, _prefab.transform.localRotation, chessHolder_SelfSide);
+
+        // move to
+        InitChessToBackupField(_go.GetComponent<ChessController>(), _pos);
+    }
+
+    // 添加棋子至备战区
+    private void InitChessToBackupField(ChessController chess, Vector3 pos_to) {
+        if (chess == null) {
+            return;
+        }
+
+        //// 从战斗列表中移除
+        //if (selfSideChessList.Contains(chess)) {
+        //    selfSideChessList.Remove(chess);
+        //}
+
+        // 备战格位置-1
+        boardOccupiedStatus[(int)pos_to.x, (int)pos_to.y] = -1;
+        chess.Position = pos_to;
+    }
+
+    // 获取备战区内第一个空闲位置
     private Vector3 GetFirstAvailableFromBackupField() {
         for (int i = 0; i < boardOccupiedStatus.GetLength(0); i++) {
             if (boardOccupiedStatus[i, 0] == 0) {
@@ -188,19 +189,29 @@ public partial class BoardManager : MonoBehaviour {
         return Vector3.zero;
     }
 
-    // 将购买的棋子置入备战区
-    public void SetNewChessToBackupField(ChessProp prop) {
-        // select available position in backup field
-        var _pos = GetFirstAvailableFromBackupField();
+    #endregion
 
-        // instatiate it
-        var _prefab = chessPrefab_SelfSide.Where(c=>c.GetComponent<ChessController>().CharacterType == prop.character).First();
-        var _go = Instantiate(_prefab, _pos, _prefab.transform.localRotation);
+    #region battle field
+    // 棋子阵亡后退出战场
+    public void QuitBattleField(ChessController _chess) {
+        if (_chess.Camp == ChessCamp.SELF_SIDE) {
+            if (selfSideChessList.Contains(_chess)) {
+                selfSideChessList.Remove(_chess);
+            }
+        }
 
-        // move to
-        InitChessToBackupField(_go.GetComponent<ChessController>(), _pos);
+        if (_chess.Camp == ChessCamp.OTHER_SIDE) {
+            if (otherSideChessList.Contains(_chess)) {
+                otherSideChessList.Remove(_chess);
+            }
+        }
+
+        ResetBoardSlot((int)_chess.Position.x, (int)_chess.Position.y);
+
+        OnChessListChanged?.Invoke(selfSideChessList.Count, otherSideChessList.Count);
     }
-
+    #endregion
+    
     #region unused
     public bool IsSelected {
         get {

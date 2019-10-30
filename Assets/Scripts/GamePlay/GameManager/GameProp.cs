@@ -7,7 +7,7 @@ public class GameProp : ScriptableObject {
 
     public enum GAME_STATUS { GAME_START, Preparing, Fighting, RoundFinished, GameFinished }
 
-    [Header("Game State")]
+    [Header("Game Status")]
     public GAME_STATUS _status;
 
     [Header("Base values")]
@@ -127,12 +127,12 @@ public class GameProp : ScriptableObject {
             _chessNo_Other.Set(otherChessCount);
             
             // 己方棋子被团灭，本局败
-            if (_chessNo_Self.GetValue <= 0 && _status != GAME_STATUS.GAME_START) {
+            if (_chessNo_Self.GetValue <= 0 && _chessNo_Other.GetValue > 0 && _status == GAME_STATUS.Fighting) {
                 OnRoundDefeat?.Invoke(0);
             }
 
             // 敌方棋子被团灭，本局胜
-            if (_chessNo_Other.GetValue <= 0 && _status != GAME_STATUS.GAME_START) {
+            if (_chessNo_Other.GetValue <= 0 && _chessNo_Self.GetValue > 0 && _status == GAME_STATUS.Fighting) {
                 OnRoundWin?.Invoke();
             }
         };

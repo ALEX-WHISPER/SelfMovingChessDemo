@@ -63,7 +63,9 @@ public class ChessController : MonoBehaviour {
                 seekerChessList.Add(_seeker);
             }
 
-            Debug.Log($"{_seeker.name} is focusing on {transform.name}");
+            if (_seeker != null) {
+                Debug.Log($"{_seeker.name} is focusing on {transform.name}");
+            }
         };
 
         GotDefocused += (_seeker) => {
@@ -230,7 +232,7 @@ public class ChessController : MonoBehaviour {
         RemoveFocus();
 
         // reset the slot status
-        _boardManager.QuitBoardField(this);
+        _boardManager.QuitBattleField(this);
         Position = Vector2.zero;
 
         // set new target for seekers

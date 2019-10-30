@@ -5,10 +5,10 @@ using UnityEngine;
 public partial class BoardManager : MonoBehaviour {
 
     private void InitChessLayout() {
-        InitOtherSide();
+        SpawnEnemyChess();
     }
 
-    private void InitOtherSide() {
+    private void SpawnEnemyChess() {
         // 在非重复位置实例化指定数量的敌人棋子
         for (int i = 0; i < chessCount_OtherSide; i++) {
             int rowIndex, colIndex;
@@ -19,7 +19,7 @@ public partial class BoardManager : MonoBehaviour {
                 boardOccupiedStatus[rowIndex, colIndex] = 2; // set the slot occupied
 
                 var initPos = GetTileCenter(rowIndex, colIndex); // get the exact position of that slot
-                var chess = Instantiate(chessPrefab_OtherSide[prefabIndex], initPos, Quaternion.identity); // instantiate the chess
+                var chess = Instantiate(chessPrefab_OtherSide[prefabIndex], initPos, Quaternion.identity, chessHolder_OtherSide); // instantiate the chess
 
                 var _controller = chess.GetComponent<ChessController>();
                 if (_controller != null) {

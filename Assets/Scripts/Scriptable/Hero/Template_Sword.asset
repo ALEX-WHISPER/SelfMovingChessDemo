@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30c9e9907f915a64ebf870d675cc6950, type: 3}
   m_Name: Template_Sword
   m_EditorClassIdentifier: 
-  camp: 1
+  camp: 0
   character: 1
   chessName: Sword
   _gfx: {fileID: 8737800896936779051, guid: cc1d67c3ffbb43c4784211a0dca71c25, type: 3}
+  level:
+    baseValue: 0
   damageAmout:
     baseValue: 5
   maxHealth:

@@ -26,18 +26,25 @@ public class Draggable : MonoBehaviour {
     private GameObject display_Green = null;
     private GameObject display_Red = null;
 
+    public bool IsDraggable { get; set; }
+
     void Start() {
         lastLocation = transform.position;
         boardManager = GameObject.Find("ChessBoard").GetComponent<BoardManager>();
+        IsDraggable = true;
     }
 
     void Update() {
-        if(isCheckSelection) {
+        if(isCheckSelection && IsDraggable) {
             CheckSelection();
         }
     }
 
     void OnMouseDown() {
+        if (!IsDraggable) {
+            return;
+        }
+
         mZCoord = Camera.main.WorldToScreenPoint(transform.position).z;
         lastLocation = transform.position;
     }
@@ -45,6 +52,9 @@ public class Draggable : MonoBehaviour {
     void OnMouseDrag() {
         // move the selected object along with cursor
         //var targetPos = GetMouseWorldPosition() + mOffset;
+        if (!IsDraggable) {
+            return;
+        }
 
         var targetPos = GetMouseWorldPosition();
         targetPos.y = yPosOnDragging;
@@ -57,6 +67,9 @@ public class Draggable : MonoBehaviour {
 
     void OnMouseUp() {
         // drop the selected object into the drop area
+        if (!IsDraggable) {
+            return;
+        }
 
         DeactivateDisplayEffect();
         if (boardManager == null || !isAllowedPlacing) {
@@ -74,6 +87,10 @@ public class Draggable : MonoBehaviour {
         isCheckSelection = false;
         
         boardManager.MoveChess(chess, pos_from, pos_to);
+        if (chess.Position == pos_from) {
+            transform.position = lastLocation;
+        }
+
         InteractEventsManager.MouseDoneDrag?.Invoke();
     }
     

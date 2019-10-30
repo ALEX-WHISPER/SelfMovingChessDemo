@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour {
+public partial class UIManager : MonoBehaviour {
     public GameProp _gameProp;
+
+    [Header("PURCHASE")]
+    public GameObject pan_Purchase;
 
     [Header("TOP CENTER")]
     public Text txt_TimeRemainning;
@@ -33,7 +36,7 @@ public class UIManager : MonoBehaviour {
     private void Update() {
         txt_SelfChessAliveCount.text = $"{_gameProp.ChessNo_Self}";
         txt_OtherChessAliveCount.text = $"{_gameProp.ChessNo_Other}";
-        txt_RoundNumber.text = $"{_gameProp.RoundNo}";
+        txt_RoundNumber.text = $"第{_gameProp.RoundNo}回合";
         txt_CurLevel.text = $"Lv.{_gameProp.Level}";
         txt_CurTreasureAmout.text = $"coins: {_gameProp.TreasureAmount}";
 
@@ -41,8 +44,8 @@ public class UIManager : MonoBehaviour {
         txt_EnemyName.text = $"{_gameProp.EnemyName}";
     }
 
-    public void StartTimer(int duration) {
-        CountDown(duration);
+    private void StartTimer(int duration) {
+        StartCoroutine(CountDown(duration));
     }
 
     IEnumerator CountDown(int duration) {

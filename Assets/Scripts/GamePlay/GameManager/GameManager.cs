@@ -10,7 +10,6 @@ public partial class GameManager: SingletonBase<GameManager> {
     private GameProp _gameProp;
     private BoardManager _boardManager;
     private UIManager _uiManager;
-    private bool isBonded = false;
 
     public Action OnProcessFinished;
     public Action OnPreparationProceeded;
@@ -49,31 +48,32 @@ public partial class GameManager: SingletonBase<GameManager> {
         };
     }
 
-    private void StatusControl() {
-        OnProcessFinished += () => {
-            if (_gameProp._status == GameProp.GAME_STATUS.Preparing) {
-                // Enter fight stage...
-                _gameProp._status = GameProp.GAME_STATUS.Fighting;
-                EnterStatus_Preparing();
-            }
-
-            if (_gameProp._status == GameProp.GAME_STATUS.Fighting) {
-                // Enter round finished stage...
-                _gameProp._status = GameProp.GAME_STATUS.RoundFinished;
-            }
-
-            if (_gameProp._status == GameProp.GAME_STATUS.RoundFinished) {
-                // Enter preparation stage...
-                _gameProp._status = GameProp.GAME_STATUS.Preparing;
-            }
-        };
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.F2)) {
+            _gameProp._status = GameProp.GAME_STATUS.GAME_START;
+            OnProcessFinished?.Invoke();
+        }
     }
 
-    private void Update() {
-        if (Input.GetKeyDown(KeyCode.Space) && !isBonded) {
-            BindingFocus();
-            isBonded = true;
-        }
+    private void StatusControl() {
+        OnProcessFinished += () => {
+            switch(_gameProp._status) {
+                case GameProp.GAME_STATUS.GAME_START:
+                    EnterStatus_Preparing();
+                    break;
+                case GameProp.GAME_STATUS.Preparing:
+                    EnterStatus_Fighting();
+                    break;
+                case GameProp.GAME_STATUS.Fighting:
+                    EnterStatus_RoundFinished();
+                    break;
+                case GameProp.GAME_STATUS.RoundFinished:
+                    EnterStatus_Preparing();
+                    break;
+                default:
+                    break;
+            }
+        };
     }
 
     public bool PurchaseChessToBackup(ChessProp prop) {
@@ -100,7 +100,7 @@ public partial class GameManager: SingletonBase<GameManager> {
         int m1 = l1.Count - 1;
         int m2 = l2.Count - 1;
 
-        if (!(m1 > 0 && m2 > 0)) {
+        if (!(m1 >= 0 && m2 >= 0)) {
             return;
         }
 
