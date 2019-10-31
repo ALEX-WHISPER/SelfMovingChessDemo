@@ -56,16 +56,18 @@ public class GameProp : ScriptableObject {
     public int ChessNo_Other { get { return _chessNo_Other.GetValue; } }
     public int KillCount { get { return _kill.GetValue; } }
     public int DefeatCount { get { return _defeat.GetValue; } }
+    public bool IsThisRoundWin { get { return isRoundWin; } }
 
     // Events
-    public Action<GAME_STATUS> OnGameStatusChanged;
+    public Action<GAME_STATUS> UpdateGameStatus;
+    public Action<GAME_STATUS> OnGameStatusUpdated;
     public Action OnLevelUp;
     public Action<int> OnExpIncreased;
     public Action OnExpIncreasedByInterval;
     public Action<int> OnExpDecreased;
     public Action<int, int> OnExpInfoChanged;
-    public Action<int> OnTreasureIncreased;
-    public Action<int> OnTreasureDecreased;
+    public Action<int> IncreaseTreasure;
+    public Action<int> DecreasedTreasure;
     public Action OnRoundFinished;
     public Action<int, int> OnChessCountChanged;
     public Action<bool> OnRoundResultConfirmed;
@@ -99,8 +101,9 @@ public class GameProp : ScriptableObject {
     }
 
     private void EventsRegister() {
-        OnGameStatusChanged += (newStatus) => {
+        UpdateGameStatus += (newStatus) => {
             _status = newStatus;
+            OnGameStatusUpdated?.Invoke(_status);
         };
 
         // 升级
@@ -127,12 +130,12 @@ public class GameProp : ScriptableObject {
         };
 
         // 获取金币
-        OnTreasureIncreased += (step) => {
+        IncreaseTreasure += (step) => {
             _treasureAmount.Increase(step);
         };
 
         // 消耗金币
-        OnTreasureDecreased += (step) => {
+        DecreasedTreasure += (step) => {
             if (_treasureAmount.GetValue < step) {
                 return;
             }

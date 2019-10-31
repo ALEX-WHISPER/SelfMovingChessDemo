@@ -19,6 +19,7 @@ public class PurchaseSlot : MonoBehaviour, IPointerClickHandler {
     private ChessProp _chessProp;
 
     private void Start() {
+        allowedToPurchase = true;
         SlotRefresh();
     }
     

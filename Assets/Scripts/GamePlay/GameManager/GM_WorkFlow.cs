@@ -3,7 +3,7 @@ public partial class GameManager: SingletonBase<GameManager>, IWorkFlowExecuter 
 
     // 游戏开始
     public void EnterStatus_GameStart() {
-        _gameProp.OnGameStatusChanged?.Invoke(GameProp.GAME_STATUS.GAME_START);
+        _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.GAME_START);
 
         _uiManager.EnterStatus_GameStart();
         _boardManager.EnterStatus_GameStart();
@@ -11,7 +11,7 @@ public partial class GameManager: SingletonBase<GameManager>, IWorkFlowExecuter 
 
     // 准备阶段
     public void EnterStatus_Preparing() {
-        _gameProp.OnGameStatusChanged?.Invoke(GameProp.GAME_STATUS.Preparing);
+        _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.Preparing);
 
         _uiManager.EnterStatus_Preparing();
         _boardManager.EnterStatus_Preparing();
@@ -19,7 +19,7 @@ public partial class GameManager: SingletonBase<GameManager>, IWorkFlowExecuter 
 
     // 战斗阶段
     public void EnterStatus_Fighting() {
-        _gameProp.OnGameStatusChanged?.Invoke(GameProp.GAME_STATUS.Fighting);
+        _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.Fighting);
 
         _uiManager.EnterStatus_Fighting();
         _boardManager.EnterStatus_Fighting();
@@ -29,7 +29,7 @@ public partial class GameManager: SingletonBase<GameManager>, IWorkFlowExecuter 
 
     // 回合结束
     public void EnterStatus_RoundFinished() {
-        _gameProp.OnGameStatusChanged?.Invoke(GameProp.GAME_STATUS.RoundFinished);
+        _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.RoundFinished);
         _gameProp.OnRoundFinished?.Invoke();
 
         _uiManager.EnterStatus_RoundFinished();
@@ -38,7 +38,7 @@ public partial class GameManager: SingletonBase<GameManager>, IWorkFlowExecuter 
 
     // 游戏结束
     public void EnterStatus_GameFinished() {
-        _gameProp.OnGameStatusChanged?.Invoke(GameProp.GAME_STATUS.GameFinished);
+        _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.GameFinished);
 
         _uiManager.EnterStatus_GameFinished();
         _boardManager.EnterStatus_GameFinished();

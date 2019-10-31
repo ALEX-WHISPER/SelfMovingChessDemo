@@ -29,6 +29,11 @@ public partial class UIManager : MonoBehaviour {
     public HealthBarManager bar_OtherChessAlivePercentage;
     public Text txt_RoundNumber;
 
+    [Header("TOP CENTER - Round Finished")]
+    public GameObject pan_RoundResult;
+    public Sprite img_RoundWin;
+    public Sprite img_RoundDefeat;
+
     [Header("BOTTOM LEFT")]
     public Text txt_CurLevel;
     public Text txt_CurTreasureAmout;
@@ -45,6 +50,20 @@ public partial class UIManager : MonoBehaviour {
         _gameProp.OnExpInfoChanged += (exp, expMax) => {
             bar_ExpInfo.UpdateBar(exp, expMax);
             bar_ExpInfo.barText.text = $"{exp}/{expMax}";
+        };
+
+        _gameProp.OnGameStatusUpdated += (status) => {
+            if (status == GameProp.GAME_STATUS.RoundFinished) {
+                
+                if (_gameProp.IsThisRoundWin) {
+                    pan_RoundResult.GetComponent<Image>().sprite = img_RoundWin;
+                } else {
+                    pan_RoundResult.GetComponent<Image>().sprite = img_RoundDefeat;
+                }
+
+                pan_RoundResult.SetActive(true);
+                pan_RoundResult.GetComponent<AlphaFading>().AutoFadeInAndFadeOut();
+            }
         };
     }
 

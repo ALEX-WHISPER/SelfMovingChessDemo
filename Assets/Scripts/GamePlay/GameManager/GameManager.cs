@@ -54,6 +54,10 @@ public partial class GameManager: SingletonBase<GameManager> {
             _gameProp._status = GameProp.GAME_STATUS.GAME_START;
             OnProcessFinished?.Invoke();
         }
+
+        if (Input.GetKeyDown(KeyCode.F12)) {
+            _gameProp.IncreaseTreasure?.Invoke(100);
+        }
     }
 
     private void StatusControl() {
@@ -84,7 +88,7 @@ public partial class GameManager: SingletonBase<GameManager> {
         }
 
         _boardManager.SetNewChessToBackupField(prop);
-        _gameProp.OnTreasureDecreased(prop.cost.GetValue);
+        _gameProp.DecreasedTreasure(prop.cost.GetValue);
 
         return true;
     }
