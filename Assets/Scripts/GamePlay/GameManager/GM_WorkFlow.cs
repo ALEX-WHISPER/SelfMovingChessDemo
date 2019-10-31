@@ -30,6 +30,7 @@ public partial class GameManager: SingletonBase<GameManager>, IWorkFlowExecuter 
     // 回合结束
     public void EnterStatus_RoundFinished() {
         _gameProp.OnGameStatusChanged?.Invoke(GameProp.GAME_STATUS.RoundFinished);
+        _gameProp.OnRoundFinished?.Invoke();
 
         _uiManager.EnterStatus_RoundFinished();
         _boardManager.EnterStatus_RoundFinished();

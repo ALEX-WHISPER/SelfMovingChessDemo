@@ -10,7 +10,7 @@ public partial class BoardManager : MonoBehaviour {
 
     private void SpawnEnemyChess() {
         // 在非重复位置实例化指定数量的敌人棋子
-        for (int i = 0; i < chessCount_OtherSide; i++) {
+        for (int i = 0; i < _gameProp.MaxChessNum; i++) {
             int rowIndex, colIndex;
             var prefabIndex = Random.Range(0, chessPrefab_OtherSide.Count);
 

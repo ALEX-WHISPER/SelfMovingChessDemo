@@ -40,7 +40,7 @@ public class ChessController : MonoBehaviour {
     public Action<ChessController> GotFocused; // 被锁定
     public Action<ChessController> GotDefocused; // 被取消锁定
 
-    public Action<float, float> OnDamageTaken;
+    public Action<float, float> OnHealthChanged;
     public Action<ChessController> OnChessDied;
     public Action<bool> OnRoundOver;
 
@@ -85,7 +85,7 @@ public class ChessController : MonoBehaviour {
             Fight();
         };
 
-        GameManager.Instance.OnRoundFinished += (isSelfWin) => {
+        GameManager.Instance.OnRoundResultConfirmed += (isSelfWin) => {
             _motor.FreezeMotorFunction();
 
             if (isSelfWin) {
@@ -212,11 +212,16 @@ public class ChessController : MonoBehaviour {
         }
 
         CurrentHealth -= damageAmount;
-        OnDamageTaken?.Invoke(CurrentHealth, chessProp.maxHealth.GetValue);
+        OnHealthChanged?.Invoke(CurrentHealth, chessProp.maxHealth.GetValue);
 
         if (CurrentHealth <= 0) {
             Die();
         }
+    }
+
+    private void Heal() {
+        CurrentHealth = chessProp.maxHealth.GetValue;
+        OnHealthChanged?.Invoke(CurrentHealth, chessProp.maxHealth.GetValue);
     }
 
     private void Die() {
@@ -252,6 +257,25 @@ public class ChessController : MonoBehaviour {
         OnChessDied?.Invoke(this);
     }
     #endregion
+
+    public void ResetChess() {
+        // heal the health
+        Heal();
+
+        // enable motor function
+        _motor.LaunchMotorFunction();
+
+        // enable draggable component
+        var dragComponent = transform.GetComponent<Draggable>();
+        if (dragComponent != null) {
+            dragComponent.IsDraggable = true;
+        }
+
+        // reset anim condition
+        if (_anim != null) {
+            _anim.ResetToStart?.Invoke();
+        }
+    }
 
     void OnMouseOver() {
         InteractEventsManager.MouseEnterInteractable?.Invoke();

@@ -12,9 +12,8 @@ public partial class GameManager: SingletonBase<GameManager> {
     private UIManager _uiManager;
 
     public Action OnProcessFinished;
-    public Action OnPreparationProceeded;
-    public Action OnPreparationFinished;
     public Action<bool> OnRoundFinished;
+    public Action<bool> OnRoundResultConfirmed;
 
     void Awake() {
         _boardManager = GameObject.FindWithTag("GameBoard").GetComponent<BoardManager>();
@@ -30,16 +29,18 @@ public partial class GameManager: SingletonBase<GameManager> {
             _gameProp.OnChessCountChanged?.Invoke(selfCount, otherCount);
         };
 
+        _gameProp.OnRoundResultConfirmed += (isWin) => { OnRoundResultConfirmed?.Invoke(isWin); };
+
         // 本局胜
         _gameProp.OnRoundWin += () => {
-            OnRoundFinished?.Invoke(true);
             Debug.Log($"Round {_gameProp.RoundNo}: WIN");
+            OnRoundFinished?.Invoke(true);
         };
 
         // 本局败
         _gameProp.OnRoundDefeat += (step) => {
-            OnRoundFinished?.Invoke(false);
             Debug.Log($"Round {_gameProp.RoundNo}: DEFEAT");
+            OnRoundFinished?.Invoke(false);
         };
 
         // 游戏结束

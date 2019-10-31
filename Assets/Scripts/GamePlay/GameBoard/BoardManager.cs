@@ -176,6 +176,7 @@ public partial class BoardManager : MonoBehaviour {
         // 备战格位置-1
         boardOccupiedStatus[(int)pos_to.x, (int)pos_to.y] = -1;
         chess.Position = pos_to;
+        chess.transform.position = pos_to;
     }
 
     // 获取备战区内第一个空闲位置
@@ -209,6 +210,14 @@ public partial class BoardManager : MonoBehaviour {
         ResetBoardSlot((int)_chess.Position.x, (int)_chess.Position.y);
 
         OnChessListChanged?.Invoke(selfSideChessList.Count, otherSideChessList.Count);
+    }
+
+    // 本轮战斗结束后，恢复存活棋子状态
+    private void ResetSurvivedChess() {
+        for (int i = 0; i < selfSideChessList.Count; i++) {
+            InitChessToBackupField(selfSideChessList[i], GetFirstAvailableFromBackupField());
+            selfSideChessList[i].ResetChess();
+        }
     }
     #endregion
     

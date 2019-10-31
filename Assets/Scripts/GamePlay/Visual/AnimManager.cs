@@ -11,6 +11,7 @@ public class AnimManager : MonoBehaviour {
     public Action StartAttacking;
     public Action TargetChanged;
     public Action<bool> AttackFinished;
+    public Action ResetToStart;
 
     private void Awake() {
         _anim = GetComponent<Animator>();
@@ -48,11 +49,18 @@ public class AnimManager : MonoBehaviour {
             _anim.SetBool("bool_Attacking", false); // stop attacking
 
             if (isVictory) {
-                _anim.SetBool("bool_Idling", true); // continously idling
+                _anim.SetBool("bool_RoundOver", true); // continously idling
                 _anim.SetTrigger("tri_Victory");    // start victory idling
             } else {
                 _anim.SetTrigger("tri_Dead");   // trigger to die
             }
+        };
+
+        ResetToStart += () => {
+            _anim.SetBool("bool_RoundOver", false);
+
+            _anim.SetTrigger("tri_Reset");
+            _anim.SetBool("bool_Idling", true);
         };
     }
 

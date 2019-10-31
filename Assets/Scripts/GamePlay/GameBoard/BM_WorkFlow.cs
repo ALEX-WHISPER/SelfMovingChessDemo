@@ -16,13 +16,13 @@ public partial class BoardManager: IWorkFlowExecuter {
             }
         }
 
-        // destroy all the gameobjects in battle field
-        foreach (Transform child in chessHolder_SelfSide.transform) {
-            Destroy(child.gameObject);
-        }
+        // destroy the other-side chess in battle field
         foreach (Transform child in chessHolder_OtherSide.transform) {
             Destroy(child.gameObject);
         }
+
+        // recycling the survived self-side chess to backup field
+        ResetSurvivedChess();
 
         selfSideChessList.Clear();
         otherSideChessList.Clear();

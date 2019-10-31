@@ -66,15 +66,15 @@ public class ChessMotor : MonoBehaviour {
     public void FreezeMotorFunction() {
         freezeAll = true;
 
-        _obstacle.enabled = false;
-        _agent.enabled = false;
+        if (_obstacle != null) _obstacle.enabled = false;
+        if (_agent != null) _agent.enabled = false;
     }
 
     public void LaunchMotorFunction() {
         freezeAll = false;
 
-        _obstacle.enabled = false;
-        _agent.enabled = true;
+        if (_obstacle != null) _obstacle.enabled = false;
+        if (_agent != null) _agent.enabled = true;
     }
 
     // move towards a specified point
