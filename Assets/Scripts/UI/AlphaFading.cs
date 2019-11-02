@@ -15,7 +15,7 @@ public class AlphaFading : MonoBehaviour {
         StartCoroutine(FadeInAndOut());
     }
 
-    private void AlphaFadeTo(float alphaVal) {
+    public void AlphaFadeTo(float alphaVal) {
         StartCoroutine(FadeTo(alphaVal));
     }
     

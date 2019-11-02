@@ -39,7 +39,6 @@ public partial class GameManager: SingletonBase<GameManager>, IWorkFlowExecuter 
     // 游戏结束
     public void EnterStatus_GameFinished() {
         isGameOver = true;
-        pan_GameOver.SetActive(true);
         _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.GameFinished);
 
         _uiManager.EnterStatus_GameFinished();

@@ -21,6 +21,7 @@ public class GameProp : ScriptableObject {
 
     public int battleFieldMaxChessCount = 3;
     public int backupFieldMaxSlot = 8;
+    public int duration_StartStage = 2;
     public int duration_PrepareStage = 25;
     public int duration_FightStage = 45;
     public int duration_RoundFinished = 2;
@@ -76,7 +77,7 @@ public class GameProp : ScriptableObject {
     public Action<bool> OnRoundResultConfirmed;
     public Action OnRoundWin;
     public Action<int> OnRoundDefeat;
-    public Action<bool> OnGameOver;
+    public Action OnGameOver;
 
     public Action OnTreasureLackForRefresh;
     public Action OnTreasureEnoughForRefresh;
@@ -98,7 +99,9 @@ public class GameProp : ScriptableObject {
         _defeat = new Stat(0);
 
         for (int i = 0; i < expMaxInEachLevel.Count; i++) {
-            curLv_ExpMax.Add(i + 1, expMaxInEachLevel[i]);
+            if (!curLv_ExpMax.ContainsKey(i + 1)) {
+                curLv_ExpMax.Add(i + 1, expMaxInEachLevel[i]);
+            }
         }
         _expMax = new Stat(curLv_ExpMax[_level.GetValue]);
 
@@ -158,6 +161,11 @@ public class GameProp : ScriptableObject {
 
         // 进入下一轮
         OnRoundFinished += () => {
+            if (_roundNo.GetValue >= maxRoundNumber) {
+                UpdateGameStatus?.Invoke(GAME_STATUS.GameFinished);
+                OnGameOver?.Invoke();
+                return;
+            }
             if (isRoundWin) {
                 OnRoundWin?.Invoke();
             } else {
@@ -209,12 +217,12 @@ public class GameProp : ScriptableObject {
             _health.Decrease(step); // 血量扣除量：敌方剩余单位等级数之和
 
             if (_health.GetValue <= 0) {
-                OnGameOver?.Invoke(false);
+                OnGameOver?.Invoke();
             }
         };
 
         // 游戏结束
-        OnGameOver += (isWin) => {
+        OnGameOver += () => {
             // ...
         };
     }

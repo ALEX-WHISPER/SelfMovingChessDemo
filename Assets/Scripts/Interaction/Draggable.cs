@@ -137,7 +137,7 @@ public class Draggable : MonoBehaviour {
             return;
         }
 
-        var displayLocation = new Vector3(characterLocation.x, 0.01f, characterLocation.z);
+        var displayLocation = new Vector3(characterLocation.x, 0.03f, characterLocation.z);
 
         if (!isAllowPlacing) {
             if (display_Red == null) {

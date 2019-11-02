@@ -74,7 +74,8 @@ public partial class BoardManager: MonoBehaviour, IWorkFlowExecuter {
             return;
         }
 
-        for (int i = 0; i < _gameProp.MaxChessNum; i++) {
+        var marchCount = _gameProp.MaxChessNum - battleFieldChess_Self.Count;
+        for (int i = 0; i < marchCount; i++) {
             if (backupFieldChessList.Count <= 0) {
                 return;
             }

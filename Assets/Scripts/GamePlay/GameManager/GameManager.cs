@@ -16,7 +16,6 @@ public partial class GameManager: SingletonBase<GameManager> {
     public Action<bool> OnRoundFinished;
     public Action<bool> OnRoundResultConfirmed;
 
-    public GameObject pan_GameOver;
     private bool isGameOver = false;
 
     void Awake() {
@@ -48,9 +47,14 @@ public partial class GameManager: SingletonBase<GameManager> {
         };
 
         // 游戏结束
-        _gameProp.OnGameOver += (isWin) => {
-            Debug.Log($"GameOver: {isWin}");
+        _gameProp.OnGameOver += () => {
+            Debug.Log($"GameOver");
+            EnterStatus_GameFinished();
         };
+    }
+
+    private void Start() {
+        EnterStatus_GameStart();
     }
 
     private void Update() {
@@ -62,10 +66,10 @@ public partial class GameManager: SingletonBase<GameManager> {
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.F2)) {
-            _gameProp._status = GameProp.GAME_STATUS.GAME_START;
-            OnProcessFinished?.Invoke();
-        }
+        //if (Input.GetKeyDown(KeyCode.F2)) {
+        //    _gameProp._status = GameProp.GAME_STATUS.GAME_START;
+        //    OnProcessFinished?.Invoke();
+        //}
 
         if (Input.GetKeyDown(KeyCode.F12)) {
             _gameProp.IncreaseTreasure?.Invoke(100);
@@ -99,6 +103,11 @@ public partial class GameManager: SingletonBase<GameManager> {
     public bool PurchaseChessToBackup(ChessProp prop) {
         if (prop.cost.GetValue > _gameProp.TreasureAmount) {
             Debug.Log("Out of money!");
+            return false;
+        }
+
+        if (_boardManager.GetBackupFieldList.Count >= _gameProp.backupFieldMaxSlot) {
+            Debug.Log("slots are full!");
             return false;
         }
 

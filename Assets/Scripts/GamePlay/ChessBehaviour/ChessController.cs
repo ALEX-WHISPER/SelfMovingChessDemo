@@ -27,6 +27,7 @@ public class ChessController : MonoBehaviour {
     private ChessMotor _motor;
     private BoardManager _boardManager;
     private AnimManager _anim;
+    private Quaternion originRotation;
 
     private ChessController targetChess; // 攻击目标
     private List<ChessController> seekerChessList = new List<ChessController>(); // 被攻击来源
@@ -136,6 +137,23 @@ public class ChessController : MonoBehaviour {
         if (_anim != null) {
             _anim.SetReady?.Invoke();
         }
+
+        originRotation = transform.rotation;
+    }
+
+    private void Update() {
+        var list = Camp == ChessCamp.SELF_SIDE ? _boardManager.GetChessList_OtherSide : _boardManager.GetChessList_SelfSide;
+
+        if (_motor.Target == null) {
+            if(_anim != null)
+                _anim.ResetToStart?.Invoke();
+        } else {
+            var chess = _motor.Target.GetComponent<ChessController>();
+            if (chess == null || !list.Contains(chess)) {
+                if (_anim != null)
+                    _anim.ResetToStart?.Invoke();
+            }
+        }
     }
 
     #region path finding
@@ -239,7 +257,7 @@ public class ChessController : MonoBehaviour {
     }
 
     private void Die() {
-        Debug.Log($"{transform.name} died");
+        //Debug.Log($"{transform.name} died");
         if (_anim != null) _anim.AttackFinished?.Invoke(false);
 
         // stop fighting
@@ -289,6 +307,8 @@ public class ChessController : MonoBehaviour {
         if (_anim != null) {
             _anim.ResetToStart?.Invoke();
         }
+
+        transform.rotation = originRotation;
     }
 
     void OnMouseOver() {

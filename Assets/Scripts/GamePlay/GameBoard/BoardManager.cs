@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Linq;
 
 public partial class BoardManager : MonoBehaviour {
-
+    
     public int boardRowCount = 8;
     public int boardColCount = 8;
     public GameProp _gameProp;
@@ -32,6 +32,7 @@ public partial class BoardManager : MonoBehaviour {
     [SerializeField]
     private int[,] boardOccupiedStatus = new int[8, 8];
     
+    public List<ChessController> GetBackupFieldList { get { return this.backupFieldChessList; } }
     public List<ChessController> GetChessList_OtherSide { get { return this.battleFieldChess_Other; } }
     public List<ChessController> GetChessList_SelfSide { get { return this.battleFieldChess_Self; } }
 
@@ -85,7 +86,7 @@ public partial class BoardManager : MonoBehaviour {
         }
 
         // 将棋子放回备战区
-        if ((int)(pos_to.y) <= 0 && (int)(pos_from.y) > 0) {
+        if ((int)(pos_to.y) <= 0) {
 
             // 从战斗列表中移除
             if (battleFieldChess_Self.Contains(chess)) {
@@ -104,10 +105,10 @@ public partial class BoardManager : MonoBehaviour {
         }
 
         // 将棋子放入战斗区
-        if ((int)(pos_to.y) > 0 && (int)(pos_from.y) <= 0) {
+        if ((int)(pos_to.y) > 0) {
             
             // 若场上棋子数已超过本轮最大可战斗棋子数，则无法移动
-            if (_gameProp.MaxChessNum <= battleFieldChess_Self.Count) {
+            if (_gameProp.MaxChessNum < battleFieldChess_Self.Count) {
                 chess.Position = pos_from;
                 return;
             }

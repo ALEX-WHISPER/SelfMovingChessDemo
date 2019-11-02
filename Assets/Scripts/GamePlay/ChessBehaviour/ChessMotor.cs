@@ -16,6 +16,8 @@ public class ChessMotor : MonoBehaviour {
     private bool hasCheckedWhetherReach = false;
     private bool freezeAll = false;
     
+    public Transform Target { get { return target; } }
+
     private void EventsRegister() {
         InteractEventsManager.MouseDragging += () => {
             if (_agent != null) {
@@ -46,7 +48,7 @@ public class ChessMotor : MonoBehaviour {
         if (freezeAll) {
             return;
         }
-
+        
         if (target != null && !CheckReached()) {
             FaceRotation();
             MoveToward(target.position);

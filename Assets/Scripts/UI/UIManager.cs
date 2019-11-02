@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public partial class UIManager : MonoBehaviour {
     public GameProp _gameProp;
+    public GameObject pan_GameOver;
+    public GameObject pan_GameStart;
 
     [Header("TOP CENTER - Preparation")]
     public GameObject pan_Preparing;
@@ -72,7 +74,7 @@ public partial class UIManager : MonoBehaviour {
         _gameProp.OnGameStatusUpdated += (status) => {
             if (status == GameProp.GAME_STATUS.Preparing) {
                 EnablePurchasing();
-                pan_RoundResult.SetActive(false);
+                if (pan_RoundResult != null) pan_RoundResult.SetActive(false);
 
             } else {
                 if (status == GameProp.GAME_STATUS.RoundFinished) {
@@ -90,8 +92,19 @@ public partial class UIManager : MonoBehaviour {
             }
         };
 
-        _gameProp.OnTreasureEnoughForRefresh += () => { txt_RefreshConsumed.color = Color.white; isTreasureEnoughForRefresh = true; };
-        _gameProp.OnTreasureLackForRefresh += () => { txt_RefreshConsumed.color = Color.red; isTreasureEnoughForRefresh = false; };
+        _gameProp.OnTreasureEnoughForRefresh += () => {
+            if (txt_RefreshConsumed != null) {
+                txt_RefreshConsumed.color = Color.white;
+            }
+            isTreasureEnoughForRefresh = true;
+        };
+
+        _gameProp.OnTreasureLackForRefresh += () => {
+            if (txt_RefreshConsumed != null) {
+                txt_RefreshConsumed.color = Color.red;
+            }
+            isTreasureEnoughForRefresh = false;
+        };
 
         // open/close purchase panel
         btn_PurchasePanActivate.onClick.AddListener(()=> {
@@ -115,6 +128,8 @@ public partial class UIManager : MonoBehaviour {
     }
 
     private void Start() {
+        pan_GameOver.SetActive(false);
+
         if (_gameProp.TreasureAmount < _gameProp.refreshConsumed) {
             _gameProp.OnTreasureLackForRefresh?.Invoke();
         } else {
@@ -165,16 +180,17 @@ public partial class UIManager : MonoBehaviour {
             duration--;
         }
 
-        if (_gameProp._status == GameProp.GAME_STATUS.Preparing || _gameProp._status == GameProp.GAME_STATUS.Fighting) {
-            GameManager.Instance.OnProcessFinished?.Invoke();
-        }
+        //if (_gameProp._status == GameProp.GAME_STATUS.Preparing || _gameProp._status == GameProp.GAME_STATUS.Fighting) {
+        //    GameManager.Instance.OnProcessFinished?.Invoke();
+        //}
 
-        if (_gameProp._status == GameProp.GAME_STATUS.RoundFinished) {
-            if (_gameProp.RoundNo >= _gameProp.maxRoundNumber) {
-                _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.GameFinished);
-                GameManager.Instance.OnProcessFinished?.Invoke();
-            }
-        }
+        //if (_gameProp._status == GameProp.GAME_STATUS.RoundFinished) {
+        //    if (_gameProp.RoundNo >= _gameProp.maxRoundNumber) {
+        //        _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.GameFinished);
+        //    }
+        //    GameManager.Instance.OnProcessFinished?.Invoke();
+        //}
+        GameManager.Instance.OnProcessFinished?.Invoke();
     }
 
     #region Purchase
