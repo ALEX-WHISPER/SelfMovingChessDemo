@@ -24,14 +24,16 @@ public partial class BoardManager : MonoBehaviour {
     public Action<int, int> OnChessListChanged;
 
     [SerializeField]
-    private List<ChessController> otherSideChessList = new List<ChessController>();
+    private List<ChessController> battleFieldChess_Other = new List<ChessController>();
     [SerializeField]
-    private List<ChessController> selfSideChessList = new List<ChessController>();
+    private List<ChessController> battleFieldChess_Self = new List<ChessController>();
+    [SerializeField]
+    private List<ChessController> backupFieldChessList = new List<ChessController>();
     [SerializeField]
     private int[,] boardOccupiedStatus = new int[8, 8];
     
-    public List<ChessController> GetChessList_OtherSide { get { return this.otherSideChessList; } }
-    public List<ChessController> GetChessList_SelfSide { get { return this.selfSideChessList; } }
+    public List<ChessController> GetChessList_OtherSide { get { return this.battleFieldChess_Other; } }
+    public List<ChessController> GetChessList_SelfSide { get { return this.battleFieldChess_Self; } }
 
     [Header("InitChess")]
     public int chessCount_OtherSide = 3;
@@ -83,11 +85,16 @@ public partial class BoardManager : MonoBehaviour {
         }
 
         // 将棋子放回备战区
-        if ((int)(pos_to.y) <= 0) {
+        if ((int)(pos_to.y) <= 0 && (int)(pos_from.y) > 0) {
 
             // 从战斗列表中移除
-            if (selfSideChessList.Contains(chess)) {
-                selfSideChessList.Remove(chess);
+            if (battleFieldChess_Self.Contains(chess)) {
+                battleFieldChess_Self.Remove(chess);
+            }
+
+            // 添加至备战区列表 
+            if (!backupFieldChessList.Contains(chess)) {
+                backupFieldChessList.Add(chess);
             }
 
             // 原位置置0，备战格位置-1
@@ -97,17 +104,22 @@ public partial class BoardManager : MonoBehaviour {
         }
 
         // 将棋子放入战斗区
-        else {
+        if ((int)(pos_to.y) > 0 && (int)(pos_from.y) <= 0) {
             
             // 若场上棋子数已超过本轮最大可战斗棋子数，则无法移动
-            if (_gameProp.MaxChessNum <= selfSideChessList.Count) {
+            if (_gameProp.MaxChessNum <= battleFieldChess_Self.Count) {
                 chess.Position = pos_from;
                 return;
             }
 
             // 加入至战斗列表
-            if (!selfSideChessList.Contains(chess)) {
-                selfSideChessList.Add(chess);
+            if (!battleFieldChess_Self.Contains(chess)) {
+                battleFieldChess_Self.Add(chess);
+            }
+
+            // 从备战区列表移除
+            if (backupFieldChessList.Contains(chess)) {
+                backupFieldChessList.Remove(chess);
             }
 
             // 原位置置0，新位置置1
@@ -115,7 +127,7 @@ public partial class BoardManager : MonoBehaviour {
             boardOccupiedStatus[(int)pos_to.x, (int)pos_to.y] = 1;
             chess.Position = pos_to;
         }
-        OnChessListChanged(selfSideChessList.Count, otherSideChessList.Count);
+        OnChessListChanged(battleFieldChess_Self.Count, battleFieldChess_Other.Count);
     }
 
     // 获取棋盘矩阵中指定坐标的实际位置
@@ -168,15 +180,18 @@ public partial class BoardManager : MonoBehaviour {
             return;
         }
 
-        //// 从战斗列表中移除
-        //if (selfSideChessList.Contains(chess)) {
-        //    selfSideChessList.Remove(chess);
-        //}
+        if (!backupFieldChessList.Contains(chess)) {
+            backupFieldChessList.Add(chess);
+        }
 
         // 备战格位置-1
         boardOccupiedStatus[(int)pos_to.x, (int)pos_to.y] = -1;
         chess.Position = pos_to;
         chess.transform.position = pos_to;
+
+        for (int i = 0; i < backupFieldChessList.Count; i++) {
+            backupFieldChessList[i].ResetChess();
+        }
     }
 
     // 获取备战区内第一个空闲位置
@@ -196,27 +211,32 @@ public partial class BoardManager : MonoBehaviour {
     // 棋子阵亡后退出战场
     public void QuitBattleField(ChessController _chess) {
         if (_chess.Camp == ChessCamp.SELF_SIDE) {
-            if (selfSideChessList.Contains(_chess)) {
-                selfSideChessList.Remove(_chess);
+            if (battleFieldChess_Self.Contains(_chess)) {
+                battleFieldChess_Self.Remove(_chess);
             }
         }
 
         if (_chess.Camp == ChessCamp.OTHER_SIDE) {
-            if (otherSideChessList.Contains(_chess)) {
-                otherSideChessList.Remove(_chess);
+            if (battleFieldChess_Other.Contains(_chess)) {
+                battleFieldChess_Other.Remove(_chess);
             }
         }
 
         ResetBoardSlot((int)_chess.Position.x, (int)_chess.Position.y);
 
-        OnChessListChanged?.Invoke(selfSideChessList.Count, otherSideChessList.Count);
+        OnChessListChanged?.Invoke(battleFieldChess_Self.Count, battleFieldChess_Other.Count);
     }
 
     // 本轮战斗结束后，恢复存活棋子状态
     private void ResetSurvivedChess() {
-        for (int i = 0; i < selfSideChessList.Count; i++) {
-            InitChessToBackupField(selfSideChessList[i], GetFirstAvailableFromBackupField());
-            selfSideChessList[i].ResetChess();
+        for (int i = 0; i < battleFieldChess_Self.Count; i++) {
+            InitChessToBackupField(battleFieldChess_Self[i], GetFirstAvailableFromBackupField());
+        }
+    }
+
+    private void ResetBackupChess() {
+        for (int i = 0; i < backupFieldChessList.Count; i++) {
+            backupFieldChessList[i].ResetChess();
         }
     }
     #endregion

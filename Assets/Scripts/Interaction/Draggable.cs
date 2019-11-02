@@ -91,7 +91,7 @@ public class Draggable : MonoBehaviour {
             transform.position = lastLocation;
         }
 
-        InteractEventsManager.MouseDoneDrag?.Invoke();
+        //InteractEventsManager.MouseDoneDrag?.Invoke();
     }
     
     private void CheckSelection() {

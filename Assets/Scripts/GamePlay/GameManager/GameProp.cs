@@ -27,7 +27,9 @@ public class GameProp : ScriptableObject {
 
     [Header("Rules")]
     public List<int> expMaxInEachLevel;
+    public int maxRoundNumber = 5;
     public int expUpInterval = 5;
+    public int expUpConsumed = 5;
     public int refreshConsumed = 2;
     private Dictionary<int, int> curLv_ExpMax = new Dictionary<int, int>();
 
@@ -64,7 +66,7 @@ public class GameProp : ScriptableObject {
     public Action<GAME_STATUS> OnGameStatusUpdated;
     public Action OnLevelUp;
     public Action<int> OnExpIncreased;
-    public Action OnExpIncreasedByInterval;
+    public Action ExpIncreasedByInterval;
     public Action<int> OnExpDecreased;
     public Action<int, int> OnExpInfoChanged;
     public Action<int> IncreaseTreasure;
@@ -98,10 +100,9 @@ public class GameProp : ScriptableObject {
         for (int i = 0; i < expMaxInEachLevel.Count; i++) {
             curLv_ExpMax.Add(i + 1, expMaxInEachLevel[i]);
         }
-        
-        EventsRegister();
+        _expMax = new Stat(curLv_ExpMax[_level.GetValue]);
 
-        OnExpInfoChanged?.Invoke(_exp.GetValue, _expMax.GetValue);
+        EventsRegister();
     }
 
     private void EventsRegister() {
@@ -114,23 +115,24 @@ public class GameProp : ScriptableObject {
         OnLevelUp += () => {
             _level.Increase(); // 等级/人口提升
 
-            _exp.Set(0); // 当前经验值归零
-            _expMax.Set(curLv_ExpMax[_level.GetValue + 1]); // 经验上限提升
-
-            OnExpInfoChanged?.Invoke(_exp.GetValue, _expMax.GetValue);
+            if (curLv_ExpMax.ContainsKey(_level.GetValue)) {
+                _exp.Set(0); // 当前经验值归零
+                _expMax.Set(curLv_ExpMax[_level.GetValue]); // 经验上限提升
+            }
         };
         
         // 经验 +5
-        OnExpIncreasedByInterval += () => {
-            _exp.Increase(5);
-            _treasureAmount.Decrease(5);
+        ExpIncreasedByInterval += () => {
+            if (_treasureAmount.GetValue < expUpConsumed) {
+                return;
+            }
+            _exp.Increase(expUpInterval);
+            _treasureAmount.Decrease(expUpConsumed);
 
             // 若当前经验值已满足上限，则升级
             if (_exp.GetValue >= _expMax.GetValue) {
                 OnLevelUp?.Invoke();
             }
-
-            OnExpInfoChanged?.Invoke(_exp.GetValue, _expMax.GetValue);
         };
 
         // 获取金币
@@ -156,7 +158,6 @@ public class GameProp : ScriptableObject {
 
         // 进入下一轮
         OnRoundFinished += () => {
-
             if (isRoundWin) {
                 OnRoundWin?.Invoke();
             } else {
@@ -176,7 +177,7 @@ public class GameProp : ScriptableObject {
             // 回合数 +1
             _roundNo.Increase();
         };
-
+        
         // 棋子数量变化
         OnChessCountChanged += (selfChessCount, otherChessCount) => {
             _chessNo_Self.Set(selfChessCount);

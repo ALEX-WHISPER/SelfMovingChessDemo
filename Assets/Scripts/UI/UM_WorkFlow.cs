@@ -32,6 +32,7 @@ public partial class UIManager : IWorkFlowExecuter {
     }
 
     public void EnterStatus_GameFinished() {
-
+        isGameOver = true;
     }
+
 }

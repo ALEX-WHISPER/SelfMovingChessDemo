@@ -54,6 +54,19 @@ public class ChessController : MonoBehaviour {
     public List<ChessController> SeekerList { get { return seekerChessList; } }
     #endregion
 
+    public void GotFocusedFunc(ChessController _seeker) {
+        isBeingFocus = true;
+        hasInteracted = false;
+
+        if (!seekerChessList.Contains(_seeker)) {
+            seekerChessList.Add(_seeker);
+        }
+
+        if (_seeker != null) {
+            Debug.Log($"{_seeker.name} is focusing on {transform.name}");
+        }
+    }
+
     private void EventsRegister() {
         GotFocused += (_seeker) => {
             isBeingFocus = true;
@@ -155,7 +168,8 @@ public class ChessController : MonoBehaviour {
         }
         
         targetChess = newTarget; // assign new focus
-        newTarget.GotFocused?.Invoke(this);    // focus the new target
+        //newTarget.GotFocused?.Invoke(this);    // focus the new target
+        newTarget.GotFocusedFunc(this);
 
         if (_anim != null)
             _anim.MovingToTarget?.Invoke();

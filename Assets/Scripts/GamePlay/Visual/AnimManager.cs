@@ -21,50 +21,67 @@ public class AnimManager : MonoBehaviour {
         _anim.applyRootMotion = true;
 
         SetReady += () => {
+            _anim.ResetTrigger("tri_Reset");
             _anim.SetBool("bool_Idling", true);
         };
 
         MovingToTarget += () => {
             _anim.SetBool("bool_Idling" ,false); // stop idling
 
-            _anim.SetBool("bool_Tracing", true); // continously tracing
             _anim.SetTrigger("tri_Tracing");    // trigger to trace
+            _anim.SetBool("bool_Tracing", true); // continously tracing
         };
 
         StartAttacking += () => {
+            _anim.ResetTrigger("tri_Tracing");
+            _anim.SetBool("bool_Idling", false); // stop idling
             _anim.SetBool("bool_Tracing", false); // stop tracing
 
-            _anim.SetBool("bool_Attacking", true); // continously attacking
             _anim.SetTrigger("tri_Attack");     // trigger to attack
+            _anim.SetBool("bool_Attacking", true); // continously attacking
         };
 
         TargetChanged += () => {
+            _anim.ResetTrigger("tri_Attack");
+            _anim.SetBool("bool_Idling", false); // stop idling
             _anim.SetBool("bool_Attacking", false); // stop attacking
-            
-            _anim.SetBool("bool_Tracing", true); // continously tracing
+
             _anim.SetTrigger("tri_Tracing");    // trigger to trace
+            _anim.SetBool("bool_Tracing", true); // continously tracing
         };
 
         AttackFinished += (isVictory) => {
+            _anim.SetBool("bool_Idling", false); // stop idling
             _anim.SetBool("bool_Attacking", false); // stop attacking
 
             if (isVictory) {
-                _anim.SetBool("bool_RoundOver", true); // continously idling
-                _anim.SetTrigger("tri_Victory");    // start victory idling
+                _anim.SetTrigger("tri_Reset");    // start victory idling
+                _anim.SetBool("bool_Idling", true); // continously idling
+
             } else {
                 _anim.SetTrigger("tri_Dead");   // trigger to die
             }
         };
 
         ResetToStart += () => {
-            _anim.SetBool("bool_RoundOver", false);
+            _anim.ResetTrigger("tri_Tracing");
+            _anim.ResetTrigger("tri_Attack");
+            _anim.ResetTrigger("tri_TargetChanged");
+            _anim.ResetTrigger("tri_Dead");
+            
+            _anim.SetBool("bool_Idling", false);
+            _anim.SetBool("bool_Tracing", false);
+            _anim.SetBool("bool_Attacking", false);
 
             _anim.SetTrigger("tri_Reset");
             _anim.SetBool("bool_Idling", true);
+
+            SetReady?.Invoke();
         };
     }
 
     private void Start() {
-        SetReady?.Invoke();
+        //SetReady?.Invoke();
+        ResetToStart?.Invoke();
     }
 }

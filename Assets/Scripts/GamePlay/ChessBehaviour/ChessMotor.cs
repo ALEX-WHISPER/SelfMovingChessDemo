@@ -33,13 +33,13 @@ public class ChessMotor : MonoBehaviour {
     void Awake() {
         _agent = GetComponent<NavMeshAgent>();
         _obstacle = GetComponent<NavMeshObstacle>();
+        
+        _obstacle.enabled = false;
+        _agent.enabled = false;
     }
 
     void Start() {
         EventsRegister();
-
-        _obstacle.enabled = false;
-        _agent.enabled = true;
     }
 
     void Update() {
@@ -54,6 +54,8 @@ public class ChessMotor : MonoBehaviour {
 
         if (!hasCheckedWhetherReach && target != null) {
             if (CheckReached()) {
+                Debug.Log($"{transform.name} has reached target: {target.name}");
+
                 _agent.enabled = false;
                 _obstacle.enabled = true;
 
@@ -81,11 +83,13 @@ public class ChessMotor : MonoBehaviour {
     public void MoveToward(Vector3 point) {
         _obstacle.enabled = false;
         _agent.enabled = true;
-        _agent.SetDestination(point);        
+        _agent.SetDestination(point);
     }
     
     // the hero will start to tracing once the target has been set
     public void SetTracingTarget(ChessController newTarget) {
+        LaunchMotorFunction();
+
         _agent.stoppingDistance = newTarget.Radius;
         _agent.updateRotation = false;
         target = newTarget.transform;

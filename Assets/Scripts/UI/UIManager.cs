@@ -51,8 +51,12 @@ public partial class UIManager : MonoBehaviour {
     public Text txt_CurLevel;
     public Text txt_CurTreasureAmout;
     public HealthBarManager bar_ExpInfo;
+    public Text txt_ExpInfo;
+    public Text txt_ExpUpConsumed;
+    public Button btn_ExpUp;
 
     private float stageTimeRemaining;
+    private bool isGameOver = false;
 
     private void OnEnable() {
         _gameProp.OnChessCountChanged += (self, other) => {
@@ -103,6 +107,11 @@ public partial class UIManager : MonoBehaviour {
         btn_RefreshPurchase.onClick.AddListener(()=> {
             Refresh_Manually();
         });
+
+        // exp up
+        btn_ExpUp.onClick.AddListener(()=> {
+            _gameProp.ExpIncreasedByInterval?.Invoke();
+        });
     }
 
     private void Start() {
@@ -111,11 +120,17 @@ public partial class UIManager : MonoBehaviour {
         } else {
             _gameProp.OnTreasureEnoughForRefresh?.Invoke();
         }
+        txt_ExpUpConsumed.text = $"×{_gameProp.expUpConsumed}";
     }
 
     private void Update() {
+        if (isGameOver) {
+            return;
+        }
+
         if (txt_CurLevel != null) txt_CurLevel.text = $"Lv.{_gameProp.Level}";
-        if (txt_CurTreasureAmout != null) txt_CurTreasureAmout.text = $"coins: {_gameProp.TreasureAmount}";
+        if (txt_CurTreasureAmout != null) txt_CurTreasureAmout.text = $"{_gameProp.TreasureAmount}";
+        if (txt_ExpInfo != null) txt_ExpInfo.text = $"{_gameProp.Exp}/{_gameProp.ExpMax}";
 
         if (_gameProp._status == GameProp.GAME_STATUS.Preparing) {
             if (txt_StageHint != null) txt_StageHint.text = $"准备阶段";
@@ -150,9 +165,16 @@ public partial class UIManager : MonoBehaviour {
             duration--;
         }
 
-        //if (_gameProp._status == GameProp.GAME_STATUS.Preparing || _gameProp._status == GameProp.GAME_STATUS.Fighting) {
-        //}
-        GameManager.Instance.OnProcessFinished?.Invoke();
+        if (_gameProp._status == GameProp.GAME_STATUS.Preparing || _gameProp._status == GameProp.GAME_STATUS.Fighting) {
+            GameManager.Instance.OnProcessFinished?.Invoke();
+        }
+
+        if (_gameProp._status == GameProp.GAME_STATUS.RoundFinished) {
+            if (_gameProp.RoundNo >= _gameProp.maxRoundNumber) {
+                _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.GameFinished);
+                GameManager.Instance.OnProcessFinished?.Invoke();
+            }
+        }
     }
 
     #region Purchase

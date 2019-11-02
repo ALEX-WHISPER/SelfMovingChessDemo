@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fc6b5e6d4076824eb41cae170cdc680, type: 3}
   m_Name: GameProp
   m_EditorClassIdentifier: 
-  _status: 1
+  _status: 3
   baseVal_Health: 80
   baseVal_Level: 1
   baseVal_Exp: 0
@@ -32,20 +32,22 @@ MonoBehaviour:
   duration_RoundFinished: 2
   expMaxInEachLevel: 010000000100000002000000050000000a000000
   expUpInterval: 5
+  expUpConsumed: 5
+  refreshConsumed: 2
   _health:
     baseValue: 80
   _level:
-    baseValue: 2
+    baseValue: 4
   _exp:
     baseValue: 0
   _expMax:
-    baseValue: 2
+    baseValue: 5
   _roundNo:
     baseValue: 2
   _treasureAmount:
-    baseValue: 2
+    baseValue: 88
   _chessNo_Self:
-    baseValue: 1
+    baseValue: 3
   _chessNo_Other:
     baseValue: 0
   _kill:

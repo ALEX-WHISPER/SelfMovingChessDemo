@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public partial class GameManager: SingletonBase<GameManager> {
 
@@ -14,6 +15,9 @@ public partial class GameManager: SingletonBase<GameManager> {
     public Action OnProcessFinished;
     public Action<bool> OnRoundFinished;
     public Action<bool> OnRoundResultConfirmed;
+
+    public GameObject pan_GameOver;
+    private bool isGameOver = false;
 
     void Awake() {
         _boardManager = GameObject.FindWithTag("GameBoard").GetComponent<BoardManager>();
@@ -50,6 +54,14 @@ public partial class GameManager: SingletonBase<GameManager> {
     }
 
     private void Update() {
+        if (isGameOver) {
+            if (Input.GetKeyDown(KeyCode.R)) {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.F2)) {
             _gameProp._status = GameProp.GAME_STATUS.GAME_START;
             OnProcessFinished?.Invoke();
@@ -74,6 +86,9 @@ public partial class GameManager: SingletonBase<GameManager> {
                     break;
                 case GameProp.GAME_STATUS.RoundFinished:
                     EnterStatus_Preparing();
+                    break;
+                case GameProp.GAME_STATUS.GameFinished:
+                    EnterStatus_GameFinished();
                     break;
                 default:
                     break;

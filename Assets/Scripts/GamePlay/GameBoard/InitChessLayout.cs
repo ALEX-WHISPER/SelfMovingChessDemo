@@ -15,7 +15,7 @@ public partial class BoardManager : MonoBehaviour {
             var prefabIndex = Random.Range(0, chessPrefab_OtherSide.Count);
 
             // 获取非重复、允许放置的位置
-            if (GetAvailableSlot(out rowIndex, out colIndex)) {
+            if (GetBattleFieldAvailableSlot_Other(out rowIndex, out colIndex)) {
                 boardOccupiedStatus[rowIndex, colIndex] = 2; // set the slot occupied
 
                 var initPos = GetTileCenter(rowIndex, colIndex); // get the exact position of that slot
@@ -23,20 +23,20 @@ public partial class BoardManager : MonoBehaviour {
 
                 var _controller = chess.GetComponent<ChessController>();
                 if (_controller != null) {
-                    otherSideChessList.Add(_controller);
+                    battleFieldChess_Other.Add(_controller);
                     _controller.Position = new Vector2(rowIndex, colIndex);
                 }
             } else {
                 break;
             }
         }
-        OnChessListChanged?.Invoke(selfSideChessList.Count, otherSideChessList.Count);
+        OnChessListChanged?.Invoke(battleFieldChess_Self.Count, battleFieldChess_Other.Count);
     }
 
-    private bool GetAvailableSlot(out int rowIndex, out int colIndex) {
+    private bool GetBattleFieldAvailableSlot_Other(out int rowIndex, out int colIndex) {
         int i = -1, j = -1;
 
-        // 随机范围为敌方的非战斗区域
+        // 随机范围为敌方的战斗区域
         do {
             i = Random.Range(0, 8);
             j = Random.Range(4, 7);
@@ -46,6 +46,25 @@ public partial class BoardManager : MonoBehaviour {
         colIndex = j;
 
         if (i == - 1 || j == -1) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool GetBattleFieldAvailableSlot_Self(out int rowIndex, out int colIndex) {
+        int i = -1, j = -1;
+
+        // 随机范围为己方的战斗区域
+        do {
+            i = Random.Range(0, 4);
+            j = Random.Range(1, 4);
+        } while (boardOccupiedStatus[i, j] != 0);
+
+        rowIndex = i;
+        colIndex = j;
+
+        if (i == -1 || j == -1) {
             return false;
         }
 
