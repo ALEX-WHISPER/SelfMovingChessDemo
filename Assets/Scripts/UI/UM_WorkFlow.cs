@@ -9,10 +9,13 @@ public partial class UIManager : IWorkFlowExecuter {
     }
 
     public void EnterStatus_Preparing() {
+        
         pan_Preparing.SetActive(true);
         pan_Purchase.SetActive(true);
         pan_Fighting.SetActive(false);
+        txt_RefreshConsumed.text = $"×{_gameProp.refreshConsumed}";
 
+        Refresh_Auto();
         StartTimer(_gameProp.duration_PrepareStage);
     }
 

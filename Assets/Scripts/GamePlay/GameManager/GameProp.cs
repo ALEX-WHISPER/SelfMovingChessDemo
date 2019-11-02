@@ -28,6 +28,7 @@ public class GameProp : ScriptableObject {
     [Header("Rules")]
     public List<int> expMaxInEachLevel;
     public int expUpInterval = 5;
+    public int refreshConsumed = 2;
     private Dictionary<int, int> curLv_ExpMax = new Dictionary<int, int>();
 
     [Header("Properties")]
@@ -74,6 +75,9 @@ public class GameProp : ScriptableObject {
     public Action OnRoundWin;
     public Action<int> OnRoundDefeat;
     public Action<bool> OnGameOver;
+
+    public Action OnTreasureLackForRefresh;
+    public Action OnTreasureEnoughForRefresh;
 
     private bool isRoundWin = false;
 
@@ -132,6 +136,10 @@ public class GameProp : ScriptableObject {
         // 获取金币
         IncreaseTreasure += (step) => {
             _treasureAmount.Increase(step);
+
+            if (_treasureAmount.GetValue >= refreshConsumed) {
+                OnTreasureEnoughForRefresh?.Invoke();
+            }
         };
 
         // 消耗金币
@@ -140,6 +148,10 @@ public class GameProp : ScriptableObject {
                 return;
             }
             _treasureAmount.Decrease(step);
+
+            if (_treasureAmount.GetValue < refreshConsumed) {
+                OnTreasureLackForRefresh?.Invoke();
+            }
         };
 
         // 进入下一轮
@@ -159,7 +171,7 @@ public class GameProp : ScriptableObject {
             }
 
             // 金币奖励：每回合基础收入(当前回合数+1)
-            _treasureAmount.Increase(RoundNo + 1);
+            IncreaseTreasure?.Invoke(RoundNo + 1);
 
             // 回合数 +1
             _roundNo.Increase();

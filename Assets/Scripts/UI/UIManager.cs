@@ -16,6 +16,19 @@ public partial class UIManager : MonoBehaviour {
 
     [Header("PURCHASE")]
     public GameObject pan_Purchase;
+    public List<PurchaseSlot> purSlotList;
+    public Text txt_RefreshConsumed;
+    private bool isPurchaseLocked = false;
+
+    public Button btn_PurchasePanActivate;
+    public Button btn_LockPurchase;
+    public Sprite sprite_Locked;
+    public Sprite sprite_Unlocked;
+
+    public Button btn_RefreshPurchase;
+    public Sprite sprite_AbleRefreshing;
+    public Sprite sprite_UnableRefreshing;
+    private bool isTreasureEnoughForRefresh = false;
 
     [Header("TOP CENTER - Fighting")]
     public GameObject pan_Fighting;
@@ -53,22 +66,54 @@ public partial class UIManager : MonoBehaviour {
         };
 
         _gameProp.OnGameStatusUpdated += (status) => {
-            if (status == GameProp.GAME_STATUS.RoundFinished) {
-                
-                if (_gameProp.IsThisRoundWin) {
-                    pan_RoundResult.GetComponent<Image>().sprite = img_RoundWin;
-                } else {
-                    pan_RoundResult.GetComponent<Image>().sprite = img_RoundDefeat;
-                }
+            if (status == GameProp.GAME_STATUS.Preparing) {
+                EnablePurchasing();
+                pan_RoundResult.SetActive(false);
 
-                pan_RoundResult.SetActive(true);
-                pan_RoundResult.GetComponent<AlphaFading>().AutoFadeInAndFadeOut();
+            } else {
+                if (status == GameProp.GAME_STATUS.RoundFinished) {
+
+                    if (_gameProp.IsThisRoundWin) {
+                        pan_RoundResult.GetComponent<Image>().sprite = img_RoundWin;
+                    } else {
+                        pan_RoundResult.GetComponent<Image>().sprite = img_RoundDefeat;
+                    }
+
+                    pan_RoundResult.SetActive(true);
+                    pan_RoundResult.GetComponent<AlphaFading>().AutoFadeInAndFadeOut();
+                }
+                DisablePurchasing();
             }
         };
+
+        _gameProp.OnTreasureEnoughForRefresh += () => { txt_RefreshConsumed.color = Color.white; isTreasureEnoughForRefresh = true; };
+        _gameProp.OnTreasureLackForRefresh += () => { txt_RefreshConsumed.color = Color.red; isTreasureEnoughForRefresh = false; };
+
+        // open/close purchase panel
+        btn_PurchasePanActivate.onClick.AddListener(()=> {
+            PurchasePanelActivation();
+        });
+
+        // lock
+        btn_LockPurchase.onClick.AddListener(()=> {
+            LockPurchase();
+        });
+
+        // refresh
+        btn_RefreshPurchase.onClick.AddListener(()=> {
+            Refresh_Manually();
+        });
+    }
+
+    private void Start() {
+        if (_gameProp.TreasureAmount < _gameProp.refreshConsumed) {
+            _gameProp.OnTreasureLackForRefresh?.Invoke();
+        } else {
+            _gameProp.OnTreasureEnoughForRefresh?.Invoke();
+        }
     }
 
     private void Update() {
-
         if (txt_CurLevel != null) txt_CurLevel.text = $"Lv.{_gameProp.Level}";
         if (txt_CurTreasureAmout != null) txt_CurTreasureAmout.text = $"coins: {_gameProp.TreasureAmount}";
 
@@ -109,4 +154,65 @@ public partial class UIManager : MonoBehaviour {
         //}
         GameManager.Instance.OnProcessFinished?.Invoke();
     }
+
+    #region Purchase
+    private void EnablePurchasing() {
+        foreach (var slot in purSlotList) {
+            slot.AllowPurchase(true);
+        }
+    }
+
+    private void DisablePurchasing() {
+        foreach (var slot in purSlotList) {
+            slot.AllowPurchase(false);
+        }
+    }
+
+    private void PurchasePanelActivation() {
+        if (pan_Purchase.activeSelf) {
+            pan_Purchase.SetActive(false);
+        } else {
+            pan_Purchase.SetActive(true);
+        }
+    }
+    
+    private void Refresh_Manually() {
+        if (isPurchaseLocked || !isTreasureEnoughForRefresh) {
+            return;
+        }
+
+        foreach (var slot in purSlotList) {
+            slot.SlotRefresh();
+        }
+
+        _gameProp.DecreasedTreasure?.Invoke(_gameProp.refreshConsumed);
+    }
+
+    private void Refresh_Auto() {
+        if (isPurchaseLocked) {
+            return;
+        }
+        foreach (var slot in purSlotList) {
+            slot.SlotRefresh();
+        }
+    }
+
+    private void LockPurchase() {
+
+        // isLocked
+        isPurchaseLocked = !isPurchaseLocked;
+
+        // change lock image
+        btn_LockPurchase.image.sprite = isPurchaseLocked ? sprite_Locked : sprite_Unlocked;
+
+        // change refresh status and image
+        if (isPurchaseLocked) {
+            btn_RefreshPurchase.enabled = false;
+            btn_RefreshPurchase.image.sprite = sprite_UnableRefreshing;
+        } else {
+            btn_RefreshPurchase.enabled = true;
+            btn_RefreshPurchase.image.sprite = sprite_AbleRefreshing;
+        }
+    }
+    #endregion
 }

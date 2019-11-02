@@ -18,27 +18,20 @@ public class PurchaseSlot : MonoBehaviour, IPointerClickHandler {
     private bool allowedToPurchase = false;
     private ChessProp _chessProp;
 
-    private void Start() {
-        allowedToPurchase = true;
-        SlotRefresh();
+    public void AllowPurchase(bool isAllowed) {
+        allowedToPurchase = isAllowed;
     }
-    
+
     // 刷新
     public void SlotRefresh() {
+        if (slotGfx != null) {
+            Destroy(slotGfx);
+        }
+
         DisplayChessRT();
         DisplayChessInfo();
     }
     
-    // 打开
-    public void OpenPurchasePanel() {
-
-    }
-
-    // 关闭
-    public void ClosePurchasePanel() {
-
-    }
-
     private void DisplayChessRT() {
         var count = _gfxList.Count;
         var _gfxPrefab = _gfxList[Random.Range(0, count)];
