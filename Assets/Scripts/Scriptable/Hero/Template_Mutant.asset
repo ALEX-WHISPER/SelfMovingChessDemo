@@ -19,7 +19,7 @@ MonoBehaviour:
   level:
     baseValue: 1
   damageAmout:
-    baseValue: 1
+    baseValue: 2
   maxHealth:
     baseValue: 200
   buff:

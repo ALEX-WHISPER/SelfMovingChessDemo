@@ -19,12 +19,11 @@ public partial class GameManager: SingletonBase<GameManager>, IWorkFlowExecuter 
 
     // 战斗阶段
     public void EnterStatus_Fighting() {
-        _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.Fighting);
-
         _uiManager.EnterStatus_Fighting();
         _boardManager.EnterStatus_Fighting();
 
         BindingFocus(); // AI 配对
+        _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.Fighting);
     }
 
     // 回合结束

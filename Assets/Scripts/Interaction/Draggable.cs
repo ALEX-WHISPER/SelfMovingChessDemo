@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Draggable : MonoBehaviour {
 
@@ -25,6 +26,7 @@ public class Draggable : MonoBehaviour {
 
     private GameObject display_Green = null;
     private GameObject display_Red = null;
+    private GameObject display_Yellow = null;
 
     public bool IsDraggable { get; set; }
 
@@ -37,6 +39,18 @@ public class Draggable : MonoBehaviour {
     void Update() {
         if(isCheckSelection && IsDraggable) {
             CheckSelection();
+        }
+
+        if (Input.GetMouseButtonDown(0)) {
+
+            var originPoint = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(originPoint, out RaycastHit hitInfo, 25.0f, LayerMask.GetMask("MyChess"))) {
+                if (hitInfo.collider.name == transform.name) {
+                    GameManager.Instance.SelectChessToSell(GetComponent<ChessController>());
+                }
+            } else {
+                GameManager.Instance.DeSelectChessToSell();
+            }
         }
     }
 
@@ -52,6 +66,7 @@ public class Draggable : MonoBehaviour {
     void OnMouseDrag() {
         // move the selected object along with cursor
         //var targetPos = GetMouseWorldPosition() + mOffset;
+        
         if (!IsDraggable) {
             return;
         }
@@ -71,23 +86,24 @@ public class Draggable : MonoBehaviour {
             return;
         }
 
-        DeactivateDisplayEffect();
+        DeactivateDragEffect();
+        //DeactivateSelectedEffect();
+
         if (boardManager == null || !isAllowedPlacing) {
             transform.position = lastLocation;
             return;
         }
 
         newLocation = boardManager.GetTileCenter(selected_X, selected_Y);
-        transform.position = newLocation;
-
         var chess = transform.GetComponent<ChessController>();
         var pos_from = new Vector2(lastLocation.x, lastLocation.z);
         var pos_to = new Vector2(newLocation.x, newLocation.z);
 
         isCheckSelection = false;
         
-        boardManager.MoveChess(chess, pos_from, pos_to);
-        if (chess.Position == pos_from) {
+        if (boardManager.MoveChess(chess, pos_from, pos_to)) {
+            transform.position = newLocation;
+        } else {
             transform.position = lastLocation;
         }
 
@@ -112,10 +128,10 @@ public class Draggable : MonoBehaviour {
         if (selected_X >= 0 && selected_Y >= 0) {
             // this position is occupied
             if (boardManager.GetBoardGridStatus(selected_X, selected_Y) != 0) {
-                ActivateDisplayEffect(false);
+                ActivateDragEffect(false);
                 isAllowedPlacing = false;
             } else {
-                ActivateDisplayEffect(true);
+                ActivateDragEffect(true);
                 isAllowedPlacing = true;
             }
         }
@@ -129,7 +145,7 @@ public class Draggable : MonoBehaviour {
         return worldPos;
     }
 
-    private void ActivateDisplayEffect(bool isAllowPlacing) {
+    private void ActivateDragEffect(bool isAllowPlacing) {
         var characterLocation = boardManager.GetTileCenter(selected_X, selected_Y);
 
         // 在当前位置尝试点击拖拽时不显示放置效果
@@ -160,7 +176,7 @@ public class Draggable : MonoBehaviour {
         }
     }
 
-    private void DeactivateDisplayEffect() {
+    private void DeactivateDragEffect() {
         if (display_Red != null)
             display_Red.SetActive(false);
 

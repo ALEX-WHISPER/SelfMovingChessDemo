@@ -70,7 +70,7 @@ public partial class BoardManager: MonoBehaviour, IWorkFlowExecuter {
     private void AutoMarchCheck() {
         isChessMovable = true;
 
-        if (_gameProp._status != GameProp.GAME_STATUS.Fighting || battleFieldChess_Self.Count >= _gameProp.MaxChessNum) {
+        if (battleFieldChess_Self.Count >= _gameProp.MaxChessNum) {
             return;
         }
 
@@ -88,9 +88,10 @@ public partial class BoardManager: MonoBehaviour, IWorkFlowExecuter {
             int rowIndex, colIndex;
             if (GetBattleFieldAvailableSlot_Self(out rowIndex, out colIndex)) {
                 var newLocation = GetTileCenter(rowIndex, colIndex);
-                marchChess.transform.position = newLocation;
 
-                MoveChess(marchChess, marchChess.Position, new Vector2(newLocation.x, newLocation.z));
+                if (MoveChess(marchChess, marchChess.Position, new Vector2(newLocation.x, newLocation.z))) {
+                    marchChess.transform.position = newLocation;
+                }
             }
         }
     }

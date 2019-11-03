@@ -174,14 +174,15 @@ public class GameProp : ScriptableObject {
             }
 
             // 第3轮结束后只增加经验，等级不自动提升
-            if (RoundNo != 3) {
+            if (RoundNo < 3) {
                 OnLevelUp?.Invoke();
             } else {
                 OnExpIncreased?.Invoke(1);
             }
 
-            // 金币奖励：每回合基础收入(当前回合数+1)
-            IncreaseTreasure?.Invoke(RoundNo + 1);
+            // 金币奖励：每回合基础收入
+            int increased = RoundNo <= 3 ? RoundNo + 1 : 5;
+            IncreaseTreasure?.Invoke(increased);
 
             // 回合数 +1
             _roundNo.Increase();

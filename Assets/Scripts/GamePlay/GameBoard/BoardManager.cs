@@ -9,6 +9,8 @@ public partial class BoardManager : MonoBehaviour {
     public int boardRowCount = 8;
     public int boardColCount = 8;
     public GameProp _gameProp;
+    public GameObject display_SelectedPos;
+    private GameObject displayTemp;
 
     public Transform chessHolder_SelfSide;
     public Transform chessHolder_OtherSide;
@@ -61,7 +63,11 @@ public partial class BoardManager : MonoBehaviour {
     void Start() {
         //InitChessLayout();
     }
-    
+
+    private void Update() {
+        //InteractableCheck();
+    }
+
     // 可视化棋盘
     private void CreateBoardLayout() {
         var widthVector = Vector3.right * boardColCount;
@@ -80,10 +86,25 @@ public partial class BoardManager : MonoBehaviour {
         }
     }
 
-    // 移动棋子
-    public void MoveChess(ChessController chess, Vector2 pos_from, Vector2 pos_to) {
-        if (chess == null || !isChessMovable) {
+    public void DestroyBackupFieldChess(ChessController chess) {
+        if (chess == null || !backupFieldChessList.Contains(chess)) {
             return;
+        }
+
+        // remove from backup field list
+        backupFieldChessList.Remove(chess);
+
+        // reset position status
+        boardOccupiedStatus[(int)chess.Position.x, (int)chess.Position.y] = 0;
+
+        // destroy the gameObject
+        Destroy(chess.gameObject);
+    }
+
+    // 移动棋子
+    public bool MoveChess(ChessController chess, Vector2 pos_from, Vector2 pos_to) {
+        if (chess == null || !isChessMovable) {
+            return false;
         }
 
         // 将棋子放回备战区
@@ -108,10 +129,10 @@ public partial class BoardManager : MonoBehaviour {
         // 将棋子放入战斗区
         if ((int)(pos_to.y) > 0) {
             
-            // 若场上棋子数已超过本轮最大可战斗棋子数，则无法移动
-            if (_gameProp.MaxChessNum <= battleFieldChess_Self.Count) {
+            // 若要增加上场的棋子数量，但场上棋子数已超过本轮最大可战斗棋子数，则无法移动
+            if ((int)(pos_from.y) <= 0 && _gameProp.MaxChessNum <= battleFieldChess_Self.Count) {
                 chess.Position = pos_from;
-                return;
+                return false;
             }
 
             // 加入至战斗列表
@@ -130,6 +151,7 @@ public partial class BoardManager : MonoBehaviour {
             chess.Position = pos_to;
         }
         OnChessListChanged(battleFieldChess_Self.Count, battleFieldChess_Other.Count);
+        return true;
     }
 
     // 获取棋盘矩阵中指定坐标的实际位置
@@ -257,4 +279,45 @@ public partial class BoardManager : MonoBehaviour {
         get { return GetTileCenter((int)selected_X, (int)selected_Y); }
     }
     #endregion
+
+    private void InteractableCheck() {
+        //if (!isBoardInteractable) {
+        //    return;
+        //}
+
+        if (!Camera.main) {
+            return;
+        }
+
+        if (Input.GetMouseButtonDown(0)) {
+            DeactiveDisplaySelected();
+
+            int selectedPos_X, selectedPos_Y;
+
+            var originPoint = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(originPoint, out RaycastHit hitInfo, 25.0f, LayerMask.GetMask("ChessPanel"))) {
+                selectedPos_X = (int)hitInfo.point.x;
+                selectedPos_Y = (int)hitInfo.point.z;
+                ActivateDisplaySelected(GetTileCenter(selectedPos_X, selectedPos_Y));
+            } else {
+                selectedPos_Y = -1;
+                selectedPos_Y = -1;
+                DeactiveDisplaySelected();
+            }
+        }
+    }
+
+    private void ActivateDisplaySelected(Vector3 pos) {
+        if (displayTemp == null) {
+            displayTemp = Instantiate(display_SelectedPos, new Vector3(pos.x, 0.03f, pos.z), display_SelectedPos.transform.rotation);
+        } else {
+            displayTemp.SetActive(true);
+        }
+    }
+
+    private void DeactiveDisplaySelected() {
+        if (displayTemp != null) {
+            displayTemp.SetActive(false);
+        }
+    }
 }

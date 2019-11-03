@@ -15,8 +15,9 @@ public partial class GameManager: SingletonBase<GameManager> {
     public Action OnProcessFinished;
     public Action<bool> OnRoundFinished;
     public Action<bool> OnRoundResultConfirmed;
-
+    
     private bool isGameOver = false;
+    private ChessController _toBeSelled;
 
     void Awake() {
         _boardManager = GameObject.FindWithTag("GameBoard").GetComponent<BoardManager>();
@@ -117,6 +118,34 @@ public partial class GameManager: SingletonBase<GameManager> {
         _gameProp.DecreasedTreasure(prop.cost.GetValue);
 
         return true;
+    }
+
+    public void SelectChessToSell(ChessController chess) {
+        if (chess == null) {
+            return;
+        }
+
+        _toBeSelled = chess;
+        _uiManager.OnSelectedSellChess(_toBeSelled.propTemplate.cost.GetValue);
+    }
+
+    public void DeSelectChessToSell() {
+        //_toBeSelled = null;
+        _uiManager.OnDeSelectedSellChess();
+    }
+
+    public void SellSelectedChess() {
+        if (_toBeSelled == null) {
+            return;
+        }
+        // increase treasure
+        var prop = _toBeSelled.propTemplate;
+        _gameProp.IncreaseTreasure?.Invoke(prop.cost.GetValue);
+
+        // destroy the chess and reset the board position
+        _boardManager.DestroyBackupFieldChess(_toBeSelled);
+
+        _toBeSelled = null;
     }
 
     #region AI 战斗关系绑定

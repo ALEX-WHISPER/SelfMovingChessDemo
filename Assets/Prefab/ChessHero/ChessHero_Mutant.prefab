@@ -53,6 +53,8 @@ MonoBehaviour:
     type: 3}
   display_NoPlacing: {fileID: 6433643406359622850, guid: faca9b4929ea2d34899974ffbb6ca8b2,
     type: 3}
+  display_Selected: {fileID: 2482790170457265418, guid: 2d0dfd5560acef941babe2a05b8dce2f,
+    type: 3}
   interactLayer:
     serializedVersion: 2
     m_Bits: 512

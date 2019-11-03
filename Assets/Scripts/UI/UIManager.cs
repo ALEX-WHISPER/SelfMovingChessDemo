@@ -26,6 +26,8 @@ public partial class UIManager : MonoBehaviour {
     public Button btn_LockPurchase;
     public Sprite sprite_Locked;
     public Sprite sprite_Unlocked;
+    public Button btn_SellHero;
+    public Text txt_SellValue;
 
     public Button btn_RefreshPurchase;
     public Sprite sprite_AbleRefreshing;
@@ -59,11 +61,20 @@ public partial class UIManager : MonoBehaviour {
 
     private float stageTimeRemaining;
     private bool isGameOver = false;
+    private IEnumerator timerCoroutine;
 
     private void OnEnable() {
+
         _gameProp.OnChessCountChanged += (self, other) => {
             bar_SelfChessAlivePercentage.UpdateBar(self, _gameProp.battleFieldMaxChessCount);
             bar_OtherChessAlivePercentage.UpdateBar(other, _gameProp.battleFieldMaxChessCount);
+        };
+
+        _gameProp.OnRoundResultConfirmed += (isWin) => {
+            if (timerCoroutine != null) {
+                StopCoroutine(timerCoroutine);
+                GameManager.Instance.OnProcessFinished?.Invoke();
+            }
         };
 
         _gameProp.OnExpInfoChanged += (exp, expMax) => {
@@ -125,6 +136,11 @@ public partial class UIManager : MonoBehaviour {
         btn_ExpUp.onClick.AddListener(()=> {
             _gameProp.ExpIncreasedByInterval?.Invoke();
         });
+
+        // sell chess
+        btn_SellHero.onClick.AddListener(()=> {
+            GameManager.Instance.SellSelectedChess();
+        });
     }
 
     private void Start() {
@@ -170,7 +186,8 @@ public partial class UIManager : MonoBehaviour {
     }
     
     private void StartTimer(int duration) {
-        StartCoroutine(CountDown(duration));
+        timerCoroutine = CountDown(duration);
+        StartCoroutine(timerCoroutine);
     }
 
     IEnumerator CountDown(int duration) {
@@ -250,6 +267,18 @@ public partial class UIManager : MonoBehaviour {
         } else {
             btn_RefreshPurchase.enabled = true;
             btn_RefreshPurchase.image.sprite = sprite_AbleRefreshing;
+        }
+    }
+
+    public void OnSelectedSellChess(int cost) {
+        if (txt_SellValue != null) {
+            txt_SellValue.text = $"+ {cost}";
+        }
+    }
+
+    public void OnDeSelectedSellChess() {
+        if (txt_SellValue != null) {
+            txt_SellValue.text = $"";
         }
     }
     #endregion
