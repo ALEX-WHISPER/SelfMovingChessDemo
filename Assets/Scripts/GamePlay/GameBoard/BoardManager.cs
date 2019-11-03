@@ -39,11 +39,12 @@ public partial class BoardManager : MonoBehaviour {
     [Header("InitChess")]
     public int chessCount_OtherSide = 3;
 
-    public List<GameObject> chessPrefab_OtherSide;
+    public List<GameObject> chessPrefab_OtherSide_Normal;
+    public List<GameObject> chessPrefab_OtherSide_Hero;
     public List<GameObject> chessPrefab_SelfSide;
 
     public int GetBoardGridStatus(int i, int j) {
-        if (!(i >= 0 && i <= boardOccupiedStatus.GetLength(0)) || !(j >= 0 && j <= boardOccupiedStatus.GetLength(1))) {
+        if (!(i >= 0 && i < boardOccupiedStatus.GetLength(0)) || !(j >= 0 && j < boardOccupiedStatus.GetLength(1))) {
             return -1;
         }
 
@@ -108,7 +109,7 @@ public partial class BoardManager : MonoBehaviour {
         if ((int)(pos_to.y) > 0) {
             
             // 若场上棋子数已超过本轮最大可战斗棋子数，则无法移动
-            if (_gameProp.MaxChessNum < battleFieldChess_Self.Count) {
+            if (_gameProp.MaxChessNum <= battleFieldChess_Self.Count) {
                 chess.Position = pos_from;
                 return;
             }

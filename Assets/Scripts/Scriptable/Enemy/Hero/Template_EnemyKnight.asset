@@ -10,20 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30c9e9907f915a64ebf870d675cc6950, type: 3}
-  m_Name: Template_Light
+  m_Name: Template_EnemyKnight
   m_EditorClassIdentifier: 
   camp: 1
-  character: 0
-  chessName: Enemy_Light
-  _gfx: {fileID: 4753812812506802540, guid: 10a4b00012ddc904299d369ef16e7b23, type: 3}
+  character: 3
+  chessName: KNIGHT
+  _gfx: {fileID: 5626633956476358763, guid: 480872998de791c40bbeabdb86764017, type: 3}
+  level:
+    baseValue: 1
   damageAmout:
-    baseValue: 4
+    baseValue: 5
   maxHealth:
-    baseValue: 100
+    baseValue: 70
   buff:
     baseValue: 0
   cost:
     baseValue: 0
-  attackRange: 1.5
+  attackRange: 1.2
   attackRate: 2
   posOnBoard: {x: 0, y: 0}

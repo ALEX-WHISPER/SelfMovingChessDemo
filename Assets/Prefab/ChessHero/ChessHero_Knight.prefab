@@ -87,6 +87,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   barImage: {fileID: 205964411665185834}
+  lerpEndColor: {r: 0.8, g: 0.40392157, b: 0.2, a: 1}
+  isLerp: 0
   colorMode: 0
   barColor: {r: 0.6156863, g: 0.74509805, b: 0.33333334, a: 1}
   barGradient:
@@ -224,7 +226,7 @@ RectTransform:
   m_GameObject: {fileID: 205964412301733911}
   m_LocalRotation: {x: 0.48642388, y: -0, z: -0, w: 0.873723}
   m_LocalPosition: {x: 0, y: 0, z: 0.497}
-  m_LocalScale: {x: 0.0030774, y: 0.0030774, z: 0.0030774}
+  m_LocalScale: {x: 0.004, y: 0.004, z: 0.004}
   m_Children:
   - {fileID: 205964412055968301}
   m_Father: {fileID: 205964412884212635}
@@ -232,7 +234,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 58.212, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.05, y: 2.137}
+  m_AnchoredPosition: {x: 0.05, y: 2.085}
   m_SizeDelta: {x: 354.307, y: 83.765}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &205964412301733915
@@ -389,7 +391,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.45
-  m_Speed: 3.5
+  m_Speed: 3
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -436,8 +438,6 @@ MonoBehaviour:
   layer_Enemy:
     serializedVersion: 2
     m_Bits: 1024
-  healthBarColor_Self: {r: 0, g: 0, b: 0, a: 0}
-  healthBarColor_Other: {r: 0, g: 0, b: 0, a: 0}
 --- !u!208 &1431325214
 NavMeshObstacle:
   m_ObjectHideFlags: 0

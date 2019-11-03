@@ -26,6 +26,8 @@ public class AnimManager : MonoBehaviour {
         };
 
         MovingToTarget += () => {
+            _anim.ResetTrigger("tri_Attack");
+            _anim.SetBool("bool_Attacking", false);
             _anim.SetBool("bool_Idling" ,false); // stop idling
 
             _anim.SetTrigger("tri_Tracing");    // trigger to trace
@@ -43,8 +45,8 @@ public class AnimManager : MonoBehaviour {
 
         TargetChanged += () => {
             _anim.ResetTrigger("tri_Attack");
-            _anim.SetBool("bool_Idling", false); // stop idling
             _anim.SetBool("bool_Attacking", false); // stop attacking
+            _anim.SetBool("bool_Idling", false); // stop idling
 
             _anim.SetTrigger("tri_Tracing");    // trigger to trace
             _anim.SetBool("bool_Tracing", true); // continously tracing

@@ -40,6 +40,7 @@ public class ChessController : MonoBehaviour {
 
     public Action<ChessController> GotFocused; // 被锁定
     public Action<ChessController> GotDefocused; // 被取消锁定
+    public Action OnTargetDied;
 
     public Action<float, float> OnHealthChanged;
     public Action<ChessController> OnChessDied;
@@ -93,10 +94,18 @@ public class ChessController : MonoBehaviour {
 
             Debug.Log($"{_seeker.name} has defocused on {transform.name}");
         };
+
+        OnTargetDied += () => {
+            targetChess = null;
+        };
         
         _motor.OnReachedDestination += (targetTransform) => {
             if (_anim != null) _anim.StartAttacking?.Invoke();
             Fight();
+        };
+
+        _motor.OnMovingToward += () => {
+            if (_anim != null) _anim.MovingToTarget?.Invoke();
         };
 
         GameManager.Instance.OnRoundResultConfirmed += (isSelfWin) => {
@@ -144,15 +153,20 @@ public class ChessController : MonoBehaviour {
     private void Update() {
         var list = Camp == ChessCamp.SELF_SIDE ? _boardManager.GetChessList_OtherSide : _boardManager.GetChessList_SelfSide;
 
-        if (_motor.Target == null) {
-            if(_anim != null)
-                _anim.ResetToStart?.Invoke();
-        } else {
+        if (_motor.Target != null) {
+            _motor.LaunchMotorFunction();
+
             var chess = _motor.Target.GetComponent<ChessController>();
             if (chess == null || !list.Contains(chess)) {
                 if (_anim != null)
                     _anim.ResetToStart?.Invoke();
             }
+        }
+
+        if (_motor.Target == null) {
+            _motor.FreezeMotorFunction();
+            if (_anim != null)
+                _anim.ResetToStart?.Invoke();
         }
     }
 
@@ -195,13 +209,19 @@ public class ChessController : MonoBehaviour {
         _motor.SetTracingTarget(newTarget); // trace the new target
     }
 
-    public void RemoveFocus() {
+    public void RemoveSelfFocus() {
         if (targetChess != null) {
             targetChess.GotDefocused?.Invoke(this);
         }
 
         targetChess = null;
         _motor.RemoveTracingTarget();
+    }
+
+    public void RemoveSeekersFocus() {
+        for (int i = 0; i < seekerChessList.Count; i++) {
+            seekerChessList[i].OnTargetDied?.Invoke();
+        }
     }
     #endregion
 
@@ -222,6 +242,7 @@ public class ChessController : MonoBehaviour {
         }
 
         while (!enemyChess.IsDead && !IsDead) {
+            _motor.FaceRotation();
             enemyChess.TakeDamage(this);
             yield return new WaitForSeconds(1.0f / chessProp.attackRate);
         }
@@ -266,7 +287,8 @@ public class ChessController : MonoBehaviour {
         }
 
         // remove focus
-        RemoveFocus();
+        RemoveSelfFocus();
+        RemoveSeekersFocus();
 
         // reset the slot status
         _boardManager.QuitBattleField(this);
@@ -283,6 +305,7 @@ public class ChessController : MonoBehaviour {
             GotDefocused?.Invoke(seekerChessList[i]);
         }
 
+        // hide health bar
         transform.Find("Canvas").gameObject.SetActive(false);
         //gameObject.SetActive(false);
 

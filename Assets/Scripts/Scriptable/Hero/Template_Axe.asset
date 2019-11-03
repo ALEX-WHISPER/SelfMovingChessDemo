@@ -16,14 +16,16 @@ MonoBehaviour:
   character: 2
   chessName: Axe
   _gfx: {fileID: 2060648550944975793, guid: 20eeb8bc243b3a34f8164730bdee963d, type: 3}
+  level:
+    baseValue: 1
   damageAmout:
-    baseValue: 5
+    baseValue: 3
   maxHealth:
     baseValue: 100
   buff:
-    baseValue: 0
+    baseValue: 1
   cost:
     baseValue: 1
-  attackRange: 1.2
+  attackRange: 0.8
   attackRate: 2
   posOnBoard: {x: 0, y: 0}

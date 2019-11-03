@@ -721,7 +721,7 @@ Light:
   serializedVersion: 9
   m_Type: 1
   m_Color: {r: 0.9716981, g: 0.9655495, b: 0.9487807, a: 1}
-  m_Intensity: 1.5
+  m_Intensity: 1.25
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -766,7 +766,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 7.44e-43, y: 0, z: 1.47e-43, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -3195,10 +3195,15 @@ MonoBehaviour:
   battleFieldChess_Self: []
   backupFieldChessList: []
   chessCount_OtherSide: 3
-  chessPrefab_OtherSide:
+  chessPrefab_OtherSide_Normal:
   - {fileID: 3910656747504094363, guid: ca03d6aaa57478a48a8210d6dea4dadc, type: 3}
   - {fileID: 7606505812950258230, guid: c07e44ae34352b848a5c613944196f8e, type: 3}
   - {fileID: 8607429030931739840, guid: 940f023356e566a42a9aa17ad2bde7c3, type: 3}
+  chessPrefab_OtherSide_Hero:
+  - {fileID: 8110634788051150549, guid: cdebb88efc4db8d46964a4c48927e7ef, type: 3}
+  - {fileID: 5628425240542706789, guid: 250ab9569af225f4dbee7f3de7c7f39b, type: 3}
+  - {fileID: 7682874007325966999, guid: ffa9f1a9b1f2b2f419257955e65a01b8, type: 3}
+  - {fileID: 8119894335686229557, guid: 7f9165974b2d9214e9e7fb94632b3b8a, type: 3}
   chessPrefab_SelfSide:
   - {fileID: 2593017891973904049, guid: 1cc7a6523bfb9194fb6a2ca346dc4922, type: 3}
   - {fileID: 311490766663329452, guid: b890b9336017e544f942676889434083, type: 3}

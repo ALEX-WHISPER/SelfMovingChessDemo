@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fc6b5e6d4076824eb41cae170cdc680, type: 3}
   m_Name: GameProp
   m_EditorClassIdentifier: 
-  _status: 0
+  _status: 1
   baseVal_Health: 80
   baseVal_Level: 1
   baseVal_Exp: 0
@@ -27,10 +27,12 @@ MonoBehaviour:
   - "\u73A9\u5BB6B"
   battleFieldMaxChessCount: 1
   backupFieldMaxSlot: 8
-  duration_PrepareStage: 10
-  duration_FightStage: 12
+  duration_StartStage: 2
+  duration_PrepareStage: 15
+  duration_FightStage: 30
   duration_RoundFinished: 2
   expMaxInEachLevel: 010000000100000002000000050000000a000000
+  enemyNumInEachRound: 0200000003000000050000000300000004000000
   maxRoundNumber: 5
   expUpInterval: 5
   expUpConsumed: 5
@@ -38,19 +40,19 @@ MonoBehaviour:
   _health:
     baseValue: 80
   _level:
-    baseValue: 2
+    baseValue: 3
   _exp:
     baseValue: 0
   _expMax:
-    baseValue: 1
+    baseValue: 2
   _roundNo:
-    baseValue: 2
+    baseValue: 3
   _treasureAmount:
-    baseValue: 2
+    baseValue: 4
   _chessNo_Self:
-    baseValue: 1
+    baseValue: 2
   _chessNo_Other:
-    baseValue: 0
+    baseValue: 1
   _kill:
     baseValue: 0
   _defeat:

@@ -16,14 +16,16 @@ MonoBehaviour:
   character: 3
   chessName: Knight
   _gfx: {fileID: 8715262646366752900, guid: 8003e46e1abf6af49a1a0f0a4830f016, type: 3}
+  level:
+    baseValue: 1
   damageAmout:
-    baseValue: 5
+    baseValue: 6
   maxHealth:
-    baseValue: 100
+    baseValue: 60
   buff:
     baseValue: 0
   cost:
     baseValue: 2
-  attackRange: 1.2
-  attackRate: 2
+  attackRange: 1
+  attackRate: 2.5
   posOnBoard: {x: 0, y: 0}

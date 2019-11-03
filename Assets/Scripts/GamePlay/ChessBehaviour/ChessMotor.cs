@@ -9,12 +9,14 @@ public class ChessMotor : MonoBehaviour {
 
     public float rotateSpeed = 5f;
     public Action<Transform> OnReachedDestination;
-
+    public Action OnMovingToward;
+    
     private Transform target;
     private NavMeshAgent _agent;
     private NavMeshObstacle _obstacle;
     private bool hasCheckedWhetherReach = false;
     private bool freezeAll = false;
+    private Animator _anim;
     
     public Transform Target { get { return target; } }
 
@@ -35,7 +37,8 @@ public class ChessMotor : MonoBehaviour {
     void Awake() {
         _agent = GetComponent<NavMeshAgent>();
         _obstacle = GetComponent<NavMeshObstacle>();
-        
+        _anim = GetComponent<Animator>();
+
         _obstacle.enabled = false;
         _agent.enabled = false;
     }
@@ -51,13 +54,18 @@ public class ChessMotor : MonoBehaviour {
         
         if (target != null && !CheckReached()) {
             FaceRotation();
-            MoveToward(target.position);
+            OnMovingToward?.Invoke();
+
+            if (_anim == null || (_anim != null && _anim.GetCurrentAnimatorStateInfo(0).IsName("Moving"))) {
+                MoveToward(target.position);
+            }
         }
 
         if (!hasCheckedWhetherReach && target != null) {
             if (CheckReached()) {
                 Debug.Log($"{transform.name} has reached target: {target.name}");
 
+                FaceRotation();
                 _agent.enabled = false;
                 _obstacle.enabled = true;
 
@@ -107,7 +115,7 @@ public class ChessMotor : MonoBehaviour {
     }
 
     // facing to the target while tracing
-    private void FaceRotation() {
+    public void FaceRotation() {
         if (target == null) {
             return;
         }

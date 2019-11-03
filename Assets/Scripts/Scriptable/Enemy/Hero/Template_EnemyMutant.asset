@@ -10,20 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30c9e9907f915a64ebf870d675cc6950, type: 3}
-  m_Name: Template_Gray
+  m_Name: Template_EnemyMutant
   m_EditorClassIdentifier: 
   camp: 1
-  character: 0
-  chessName: Enemy_Gray
-  _gfx: {fileID: 168930463611787969, guid: 8097ea1050248cc4398b2661b3756984, type: 3}
+  character: 4
+  chessName: MUTANT
+  _gfx: {fileID: 5565346594519363737, guid: 77c073e653eed484f867e7aac821c102, type: 3}
+  level:
+    baseValue: 1
   damageAmout:
-    baseValue: 4
+    baseValue: 2
   maxHealth:
-    baseValue: 100
+    baseValue: 120
   buff:
     baseValue: 0
   cost:
     baseValue: 0
-  attackRange: 1.5
-  attackRate: 2
+  attackRange: 2
+  attackRate: 1
   posOnBoard: {x: 0, y: 0}

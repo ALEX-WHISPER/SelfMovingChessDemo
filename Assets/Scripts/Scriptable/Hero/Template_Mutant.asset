@@ -16,14 +16,16 @@ MonoBehaviour:
   character: 4
   chessName: Mutant
   _gfx: {fileID: 6628826465865034832, guid: 6d3c1dca2e6b5c848aa2dbe9179d435e, type: 3}
+  level:
+    baseValue: 1
   damageAmout:
-    baseValue: 5
+    baseValue: 1
   maxHealth:
-    baseValue: 100
+    baseValue: 200
   buff:
     baseValue: 0
   cost:
     baseValue: 2
-  attackRange: 1
-  attackRate: 2
+  attackRange: 0.8
+  attackRate: 1.5
   posOnBoard: {x: 0, y: 0}

@@ -22,6 +22,8 @@ public partial class GameManager: SingletonBase<GameManager> {
         _boardManager = GameObject.FindWithTag("GameBoard").GetComponent<BoardManager>();
         _uiManager = GetComponent<UIManager>();
         _gameProp.Init();
+
+        //DontDestroyOnLoad(gameObject);
     }
 
     private void OnEnable() {
@@ -60,7 +62,7 @@ public partial class GameManager: SingletonBase<GameManager> {
     private void Update() {
         if (isGameOver) {
             if (Input.GetKeyDown(KeyCode.R)) {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
             }
 
             return;

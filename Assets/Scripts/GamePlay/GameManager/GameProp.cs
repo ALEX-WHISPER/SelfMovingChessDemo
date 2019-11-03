@@ -28,6 +28,7 @@ public class GameProp : ScriptableObject {
 
     [Header("Rules")]
     public List<int> expMaxInEachLevel;
+    public List<int> enemyNumInEachRound;
     public int maxRoundNumber = 5;
     public int expUpInterval = 5;
     public int expUpConsumed = 5;

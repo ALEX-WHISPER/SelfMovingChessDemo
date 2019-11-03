@@ -16,14 +16,16 @@ MonoBehaviour:
   character: 0
   chessName: Enemy_White
   _gfx: {fileID: 5139548371569061353, guid: 3649f5f5fe8f37d4a8d795e0d0def443, type: 3}
+  level:
+    baseValue: 0
   damageAmout:
-    baseValue: 4
+    baseValue: 2
   maxHealth:
-    baseValue: 100
+    baseValue: 60
   buff:
     baseValue: 0
   cost:
     baseValue: 0
   attackRange: 1.5
-  attackRate: 2
+  attackRate: 1.5
   posOnBoard: {x: 0, y: 0}

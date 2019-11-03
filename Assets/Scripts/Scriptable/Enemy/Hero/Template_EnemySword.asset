@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30c9e9907f915a64ebf870d675cc6950, type: 3}
-  m_Name: Template_Sword
+  m_Name: Template_EnemySword
   m_EditorClassIdentifier: 
-  camp: 0
+  camp: 1
   character: 1
-  chessName: Sword
-  _gfx: {fileID: 8737800896936779051, guid: cc1d67c3ffbb43c4784211a0dca71c25, type: 3}
+  chessName: SWORD
+  _gfx: {fileID: 7233210618021333535, guid: ad46b739976c19f48b039f65306fa2ef, type: 3}
   level:
     baseValue: 1
   damageAmout:
-    baseValue: 4
+    baseValue: 2
   maxHealth:
-    baseValue: 80
+    baseValue: 75
   buff:
     baseValue: 0
   cost:
-    baseValue: 1
-  attackRange: 1
-  attackRate: 2
+    baseValue: 0
+  attackRange: 1.2
+  attackRate: 2.2
   posOnBoard: {x: 0, y: 0}
