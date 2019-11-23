@@ -5,17 +5,17 @@ using UnityEngine.EventSystems;
 
 public class Draggable : MonoBehaviour {
 
-    public GameObject display_AllowPlacing;
-    public GameObject display_NoPlacing;
+    public GameObject display_AllowPlacing; // prefab: 表示允许放置
+    public GameObject display_NoPlacing;    // prefab: 表示不允许放置
 
     public LayerMask interactLayer;
-    public float yPosOnDragging = 0f;
-    public float yPosOnDragged = 0f;
+    public float yPosOnDragging = 0f;   // 拖拽过程中棋子的 y 坐标（略高出棋盘表面）
+    public float yPosOnDragged = 0f;    // 拖拽结束后棋子的 y 坐标（等于棋盘表面）
 
     private BoardManager boardManager;
 
-    private Vector3 lastLocation;
-    private Vector3 newLocation;
+    private Vector3 lastLocation;   // 拖拽前的位置
+    private Vector3 newLocation;    // 拖拽后的位置
     private Vector3 mOffset;
     private float mZCoord;
     
@@ -24,10 +24,10 @@ public class Draggable : MonoBehaviour {
     private bool isCheckSelection = false;
     private bool isAllowedPlacing = false;
 
-    private GameObject display_Green = null;
-    private GameObject display_Red = null;
-    private GameObject display_Yellow = null;
+    private GameObject display_Green = null;    // 实例化的表示格位空闲的物体
+    private GameObject display_Red = null;      // 实例化的表示格位非空闲的物体
 
+    // 该棋子是否可拖拽
     public bool IsDraggable { get; set; }
 
     void Start() {
@@ -37,13 +37,16 @@ public class Draggable : MonoBehaviour {
     }
 
     void Update() {
+        // 拖拽时的射线检测
         if(isCheckSelection && IsDraggable) {
             CheckSelection();
         }
 
+        // 单击后的射线检测
         if (Input.GetMouseButtonDown(0)) {
-
             var originPoint = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            // layermask 为棋子对象所在的 layer
             if (Physics.Raycast(originPoint, out RaycastHit hitInfo, 25.0f, LayerMask.GetMask("MyChess"))) {
                 if (hitInfo.collider.name == transform.name) {
                     GameManager.Instance.SelectChessToSell(GetComponent<ChessController>());
@@ -59,7 +62,10 @@ public class Draggable : MonoBehaviour {
             return;
         }
 
+        // 获取当前棋子在屏幕坐标系下的 z 坐标
         mZCoord = Camera.main.WorldToScreenPoint(transform.position).z;
+
+        // 保存当前位置
         lastLocation = transform.position;
     }
 
@@ -110,13 +116,19 @@ public class Draggable : MonoBehaviour {
         //InteractEventsManager.MouseDoneDrag?.Invoke();
     }
     
+    /// <summary>
+    /// 棋子被拖拽、移动过程中，绘制表示相应格位是否空闲的预制体
+    /// </summary>
     private void CheckSelection() {
         if (!Camera.main) {
             return;
         }
 
         var originPoint = transform.position;
+
+        // layermask 为棋盘所在的 Layer
         if (Physics.Raycast(originPoint, Vector3.down, out RaycastHit hitInfo, 100.0f, interactLayer)) {
+            // 相当于向下取整
             selected_X = (int)hitInfo.point.x;
             selected_Y = (int)hitInfo.point.z;
         } else {
@@ -125,18 +137,25 @@ public class Draggable : MonoBehaviour {
         }
 
         // draw selecting area
-        if (selected_X >= 0 && selected_Y >= 0) {
-            // this position is occupied
+        if (selected_X >= 0 && selected_Y >= 0) {    
+            // position is occupied
             if (boardManager.GetBoardGridStatus(selected_X, selected_Y) != 0) {
                 ActivateDragEffect(false);
                 isAllowedPlacing = false;
-            } else {
+            } 
+            
+            // position is available
+            else {
                 ActivateDragEffect(true);
                 isAllowedPlacing = true;
             }
         }
     }
 
+    /// <summary>
+    /// 获取鼠标在世界坐标下的位置
+    /// </summary>
+    /// <returns></returns>
     private Vector3 GetMouseWorldPosition() {
         var screenPos = Input.mousePosition;
         screenPos.z = mZCoord;
@@ -145,6 +164,10 @@ public class Draggable : MonoBehaviour {
         return worldPos;
     }
 
+    /// <summary>
+    /// 显示拖拽效果
+    /// </summary>
+    /// <param name="isAllowPlacing"></param>
     private void ActivateDragEffect(bool isAllowPlacing) {
         var characterLocation = boardManager.GetTileCenter(selected_X, selected_Y);
 
@@ -176,6 +199,9 @@ public class Draggable : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// 隐藏拖拽效果
+    /// </summary>
     private void DeactivateDragEffect() {
         if (display_Red != null)
             display_Red.SetActive(false);

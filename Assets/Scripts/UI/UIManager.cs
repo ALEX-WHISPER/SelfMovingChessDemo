@@ -64,12 +64,13 @@ public partial class UIManager : MonoBehaviour {
     private IEnumerator timerCoroutine;
 
     private void OnEnable() {
-
+        // 场上棋子数量发生变化时，vs bar 更新 UI
         _gameProp.OnChessCountChanged += (self, other) => {
             bar_SelfChessAlivePercentage.UpdateBar(self, _gameProp.battleFieldMaxChessCount);
             bar_OtherChessAlivePercentage.UpdateBar(other, _gameProp.battleFieldMaxChessCount);
         };
 
+        // 回合胜负结果判断完毕，即停止阶段倒计时
         _gameProp.OnRoundResultConfirmed += (isWin) => {
             if (timerCoroutine != null) {
                 StopCoroutine(timerCoroutine);
@@ -77,19 +78,25 @@ public partial class UIManager : MonoBehaviour {
             }
         };
 
+        // <exp_cur, exp_max> 发生变化时，更新左下角 ui bar, text
         _gameProp.OnExpInfoChanged += (exp, expMax) => {
             bar_ExpInfo.UpdateBar(exp, expMax);
             bar_ExpInfo.barText.text = $"{exp}/{expMax}";
         };
 
         _gameProp.OnGameStatusUpdated += (status) => {
+            // 游戏进入准备阶段后，开启购买功能
             if (status == GameProp.GAME_STATUS.Preparing) {
                 EnablePurchasing();
-                if (pan_RoundResult != null) pan_RoundResult.SetActive(false);
+                if (pan_RoundResult != null) {
+                    pan_RoundResult.SetActive(false);
+                }
+            }
 
-            } else {
+            // 非准备阶段：关闭购买功能
+            else {
+                // 进入回合结束的结算阶段：显示胜负结果
                 if (status == GameProp.GAME_STATUS.RoundFinished) {
-
                     if (_gameProp.IsThisRoundWin) {
                         pan_RoundResult.GetComponent<Image>().sprite = img_RoundWin;
                     } else {
@@ -103,6 +110,7 @@ public partial class UIManager : MonoBehaviour {
             }
         };
 
+        // 刷新待消耗金币 <= 当前金币: 文本颜色为白色，表示可刷新
         _gameProp.OnTreasureEnoughForRefresh += () => {
             if (txt_RefreshConsumed != null) {
                 txt_RefreshConsumed.color = Color.white;
@@ -110,6 +118,7 @@ public partial class UIManager : MonoBehaviour {
             isTreasureEnoughForRefresh = true;
         };
 
+        // 刷新待消耗金币 > 当前金币: 文本颜色为红色，表示不可刷新
         _gameProp.OnTreasureLackForRefresh += () => {
             if (txt_RefreshConsumed != null) {
                 txt_RefreshConsumed.color = Color.red;
@@ -211,18 +220,27 @@ public partial class UIManager : MonoBehaviour {
     }
 
     #region Purchase
+    /// <summary>
+    /// 开启购买功能
+    /// </summary>
     private void EnablePurchasing() {
         foreach (var slot in purSlotList) {
             slot.AllowPurchase(true);
         }
     }
 
+    /// <summary>
+    /// 关闭购买功能
+    /// </summary>
     private void DisablePurchasing() {
         foreach (var slot in purSlotList) {
             slot.AllowPurchase(false);
         }
     }
 
+    /// <summary>
+    /// 开启/关闭购买界面
+    /// </summary>
     private void PurchasePanelActivation() {
         if (pan_Purchase.activeSelf) {
             pan_Purchase.SetActive(false);
@@ -231,6 +249,9 @@ public partial class UIManager : MonoBehaviour {
         }
     }
     
+    /// <summary>
+    /// 手动刷新商店
+    /// </summary>
     private void Refresh_Manually() {
         if (isPurchaseLocked || !isTreasureEnoughForRefresh) {
             return;
@@ -243,6 +264,9 @@ public partial class UIManager : MonoBehaviour {
         _gameProp.DecreasedTreasure?.Invoke(_gameProp.refreshConsumed);
     }
 
+    /// <summary>
+    /// 自动刷新商店
+    /// </summary>
     private void Refresh_Auto() {
         if (isPurchaseLocked) {
             return;
@@ -252,6 +276,9 @@ public partial class UIManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// 锁定当前角色界面
+    /// </summary>
     private void LockPurchase() {
 
         // isLocked

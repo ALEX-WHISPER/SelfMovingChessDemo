@@ -6,32 +6,45 @@ using System.Linq;
 
 public partial class BoardManager : MonoBehaviour {
     
+    // 8 x 8 棋盘
     public int boardRowCount = 8;
     public int boardColCount = 8;
+
     public GameProp _gameProp;
+
+    // 可视化物体，选中某棋子后显示在其格位上
     public GameObject display_SelectedPos;
     private GameObject displayTemp;
-
-    public Transform chessHolder_SelfSide;
-    public Transform chessHolder_OtherSide;
     
-    private const int TILE_SIZE = 1;
-    private const float TILE_OFFSET = 0.5f;
+    public Transform chessHolder_SelfSide;  // 己方棋子对象的父物体
+    public Transform chessHolder_OtherSide; // 敌方棋子对象的父物体
+
+    private const int TILE_SIZE = 1;    // 格位尺寸大小
+    private const float TILE_OFFSET = 0.5f; // 格位中心距离原点的偏移量
 
     private float selected_X;
     private float selected_Y;
-    private bool isBoardInteractable = true;
-    private bool isChessMovable = true;
 
+    private bool isBoardInteractable = true;    // 棋盘是否可交互
+    private bool isChessMovable = true; // 棋盘内棋子是否可移动
+
+    // 战斗区棋子数量变化回调
     public Action<int, int> OnChessListChanged;
 
     [SerializeField]
+    // 战斗区敌方棋子列表
     private List<ChessController> battleFieldChess_Other = new List<ChessController>();
+
     [SerializeField]
+    // 战斗区己方棋子列表
     private List<ChessController> battleFieldChess_Self = new List<ChessController>();
+
     [SerializeField]
+    // 备战区棋子列表
     private List<ChessController> backupFieldChessList = new List<ChessController>();
+
     [SerializeField]
+    // 棋盘占用情况
     private int[,] boardOccupiedStatus = new int[8, 8];
     
     public List<ChessController> GetBackupFieldList { get { return this.backupFieldChessList; } }
@@ -45,6 +58,12 @@ public partial class BoardManager : MonoBehaviour {
     public List<GameObject> chessPrefab_OtherSide_Hero;
     public List<GameObject> chessPrefab_SelfSide;
 
+    /// <summary>
+    /// 获取某格位的占用情况
+    /// </summary>
+    /// <param name="i"> 横坐标 </param>
+    /// <param name="j"> 纵坐标 </param>
+    /// <returns></returns>
     public int GetBoardGridStatus(int i, int j) {
         if (!(i >= 0 && i < boardOccupiedStatus.GetLength(0)) || !(j >= 0 && j < boardOccupiedStatus.GetLength(1))) {
             return -1;
@@ -68,7 +87,9 @@ public partial class BoardManager : MonoBehaviour {
         //InteractableCheck();
     }
 
-    // 可视化棋盘
+    /// <summary>
+    /// 可视化棋盘
+    /// </summary>
     private void CreateBoardLayout() {
         var widthVector = Vector3.right * boardColCount;
         var heightVector = Vector3.forward * boardRowCount;
@@ -86,6 +107,10 @@ public partial class BoardManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// 销毁备战区内一枚棋子
+    /// </summary>
+    /// <param name="chess"></param>
     public void DestroyBackupFieldChess(ChessController chess) {
         if (chess == null || !backupFieldChessList.Contains(chess)) {
             return;
@@ -101,7 +126,13 @@ public partial class BoardManager : MonoBehaviour {
         Destroy(chess.gameObject);
     }
 
-    // 移动棋子
+    /// <summary>
+    /// 移动棋子
+    /// </summary>
+    /// <param name="chess"> 要移动的棋子 </param>
+    /// <param name="pos_from"> 起始位置 </param>
+    /// <param name="pos_to"> 目标位置 </param>
+    /// <returns></returns>
     public bool MoveChess(ChessController chess, Vector2 pos_from, Vector2 pos_to) {
         if (chess == null || !isChessMovable) {
             return false;
@@ -162,8 +193,13 @@ public partial class BoardManager : MonoBehaviour {
         }
         return new Vector3((TILE_SIZE * i) + TILE_OFFSET, 0, (TILE_SIZE * j) + TILE_OFFSET);
     }
-    
-    // 判断要指定的位置是否合法
+
+    /// <summary>
+    /// 判断要指定的位置是否合法
+    /// </summary>
+    /// <param name="i"> 横坐标 </param>
+    /// <param name="j"> 纵坐标 </param>
+    /// <returns> 该位置是否位于棋盘区域内 </returns>
     private bool IsInRange(int i, int j) {
         if (!(i >= 0 && j >= 0) || !(i < boardRowCount && j < boardRowCount)) {
             return false;
@@ -171,8 +207,12 @@ public partial class BoardManager : MonoBehaviour {
 
         return true;
     }
-    
-    // 清除指定格位
+
+    /// <summary>
+    /// 重置格位状态
+    /// </summary>
+    /// <param name="i"> 横坐标 </param>
+    /// <param name="j"> 纵坐标 </param>
     private void ResetBoardSlot(int i, int j) {
         if (i < boardOccupiedStatus.GetLength(0) && j < boardOccupiedStatus.GetLength(1)) {
             boardOccupiedStatus[i, j] = 0;
@@ -180,7 +220,10 @@ public partial class BoardManager : MonoBehaviour {
     }
 
     #region backup field
-    // 将购买的棋子置入备战区
+    /// <summary>
+    /// 将购买的棋子置入备战区
+    /// </summary>
+    /// <param name="prop"> 购买的棋子 </param>
     public void SetNewChessToBackupField(ChessProp prop) {
         // select available position in backup field
         var _pos = GetFirstAvailableFromBackupField();
@@ -198,27 +241,38 @@ public partial class BoardManager : MonoBehaviour {
         InitChessToBackupField(_go.GetComponent<ChessController>(), _pos);
     }
 
-    // 添加棋子至备战区
+    /// <summary>
+    /// 将指定棋子添加至备战区指定位置
+    /// </summary>
+    /// <param name="chess"> 要添加的棋子 </param>
+    /// <param name="pos_to"> 添加至目标位置 </param>
     private void InitChessToBackupField(ChessController chess, Vector3 pos_to) {
         if (chess == null) {
             return;
         }
 
+        // 添加至备战区列表内
         if (!backupFieldChessList.Contains(chess)) {
             backupFieldChessList.Add(chess);
         }
 
         // 备战格位置-1
         boardOccupiedStatus[(int)pos_to.x, (int)pos_to.y] = -1;
+
+        // 移动棋子对象至目标位置
         chess.Position = pos_to;
         chess.transform.position = pos_to;
 
+        // 重置备战区列表内所有棋子的初始状态
         for (int i = 0; i < backupFieldChessList.Count; i++) {
             backupFieldChessList[i].ResetChess();
         }
     }
 
-    // 获取备战区内第一个空闲位置
+    /// <summary>
+    /// 获取备战区内第一个空闲位置
+    /// </summary>
+    /// <returns></returns>
     private Vector3 GetFirstAvailableFromBackupField() {
         for (int i = 0; i < boardOccupiedStatus.GetLength(0); i++) {
             if (boardOccupiedStatus[i, 0] == 0) {
@@ -228,12 +282,15 @@ public partial class BoardManager : MonoBehaviour {
         }
         return Vector3.zero;
     }
-
     #endregion
 
     #region battle field
-    // 棋子阵亡后退出战场
+    /// <summary>
+    /// 棋子阵亡后退出战场
+    /// </summary>
+    /// <param name="_chess"></param>
     public void QuitBattleField(ChessController _chess) {
+        // 从相应列表中被移除
         if (_chess.Camp == ChessCamp.SELF_SIDE) {
             if (battleFieldChess_Self.Contains(_chess)) {
                 battleFieldChess_Self.Remove(_chess);
@@ -246,78 +303,21 @@ public partial class BoardManager : MonoBehaviour {
             }
         }
 
+        // 重置格位状态
         ResetBoardSlot((int)_chess.Position.x, (int)_chess.Position.y);
 
+        // 战斗区棋子数量变化
         OnChessListChanged?.Invoke(battleFieldChess_Self.Count, battleFieldChess_Other.Count);
     }
 
-    // 本轮战斗结束后，恢复存活棋子状态
+    /// <summary>
+    /// 回合结束后，重置战斗区内存活的棋子状态
+    /// </summary>
     private void ResetSurvivedChess() {
+        // 将战斗区内仍存活的棋子依次添加至备战区内
         for (int i = 0; i < battleFieldChess_Self.Count; i++) {
             InitChessToBackupField(battleFieldChess_Self[i], GetFirstAvailableFromBackupField());
         }
     }
-
-    private void ResetBackupChess() {
-        for (int i = 0; i < backupFieldChessList.Count; i++) {
-            backupFieldChessList[i].ResetChess();
-        }
-    }
     #endregion
-    
-    #region unused
-    public bool IsSelected {
-        get {
-            if (!isBoardInteractable) {
-                return false;
-            }
-            return IsInRange((int)selected_X, (int)selected_Y);
-        }
-    }
-
-    public Vector3 SelectedTilePos {
-        get { return GetTileCenter((int)selected_X, (int)selected_Y); }
-    }
-    #endregion
-
-    private void InteractableCheck() {
-        //if (!isBoardInteractable) {
-        //    return;
-        //}
-
-        if (!Camera.main) {
-            return;
-        }
-
-        if (Input.GetMouseButtonDown(0)) {
-            DeactiveDisplaySelected();
-
-            int selectedPos_X, selectedPos_Y;
-
-            var originPoint = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(originPoint, out RaycastHit hitInfo, 25.0f, LayerMask.GetMask("ChessPanel"))) {
-                selectedPos_X = (int)hitInfo.point.x;
-                selectedPos_Y = (int)hitInfo.point.z;
-                ActivateDisplaySelected(GetTileCenter(selectedPos_X, selectedPos_Y));
-            } else {
-                selectedPos_Y = -1;
-                selectedPos_Y = -1;
-                DeactiveDisplaySelected();
-            }
-        }
-    }
-
-    private void ActivateDisplaySelected(Vector3 pos) {
-        if (displayTemp == null) {
-            displayTemp = Instantiate(display_SelectedPos, new Vector3(pos.x, 0.03f, pos.z), display_SelectedPos.transform.rotation);
-        } else {
-            displayTemp.SetActive(true);
-        }
-    }
-
-    private void DeactiveDisplaySelected() {
-        if (displayTemp != null) {
-            displayTemp.SetActive(false);
-        }
-    }
 }

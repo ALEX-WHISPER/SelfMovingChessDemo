@@ -23,14 +23,13 @@ public partial class GameManager: SingletonBase<GameManager>, IWorkFlowExecuter 
         _boardManager.EnterStatus_Fighting();
 
         BindingFocus(); // AI 配对
+
         _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.Fighting);
     }
 
     // 回合结束
     public void EnterStatus_RoundFinished() {
         _gameProp.UpdateGameStatus?.Invoke(GameProp.GAME_STATUS.RoundFinished);
-        _gameProp.OnRoundFinished?.Invoke();
-
         _uiManager.EnterStatus_RoundFinished();
         _boardManager.EnterStatus_RoundFinished();
     }

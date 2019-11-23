@@ -67,6 +67,9 @@ public partial class BoardManager: MonoBehaviour, IWorkFlowExecuter {
         isBoardInteractable = false;
     }
 
+    /// <summary>
+    /// 战斗区棋子数量小于当前人口数时，从备战区中选择指定数量的棋子自动入场
+    /// </summary>
     private void AutoMarchCheck() {
         isChessMovable = true;
 

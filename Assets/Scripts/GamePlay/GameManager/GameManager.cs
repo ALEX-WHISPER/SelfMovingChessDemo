@@ -103,6 +103,11 @@ public partial class GameManager: SingletonBase<GameManager> {
         };
     }
 
+    /// <summary>
+    /// 购买棋子，并将其添加至备战区
+    /// </summary>
+    /// <param name="prop"> 购买的棋子 </param>
+    /// <returns></returns>
     public bool PurchaseChessToBackup(ChessProp prop) {
         if (prop.cost.GetValue > _gameProp.TreasureAmount) {
             Debug.Log("Out of money!");
@@ -120,6 +125,10 @@ public partial class GameManager: SingletonBase<GameManager> {
         return true;
     }
 
+    /// <summary>
+    /// 选中棋子，准备出售
+    /// </summary>
+    /// <param name="chess"> 预备出售的棋子 </param>
     public void SelectChessToSell(ChessController chess) {
         if (chess == null) {
             return;
@@ -129,11 +138,17 @@ public partial class GameManager: SingletonBase<GameManager> {
         _uiManager.OnSelectedSellChess(_toBeSelled.propTemplate.cost.GetValue);
     }
 
+    /// <summary>
+    /// 对预备出售的棋子撤销选中
+    /// </summary>
     public void DeSelectChessToSell() {
         //_toBeSelled = null;
         _uiManager.OnDeSelectedSellChess();
     }
 
+    /// <summary>
+    /// 出售选中的棋子
+    /// </summary>
     public void SellSelectedChess() {
         if (_toBeSelled == null) {
             return;
